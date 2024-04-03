@@ -58,3 +58,5 @@ class Motor : public Thread {
 		Comodity getPaperUpStatus() const;
 		Comodity getPaperDownStatus() const;
 };
+
+#endif
