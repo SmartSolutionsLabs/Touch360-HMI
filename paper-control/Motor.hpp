@@ -2,7 +2,7 @@
 #define MOTOR_INC
 
 #include "Thread.hpp"
-#include "Comodity.hpp"
+#include "Commodity.hpp"
 
 /**
  * The single motor for controlling it.
@@ -12,8 +12,8 @@ class Motor : public Thread {
 		static Motor * motor;
 		Motor();
 
-		Comodity paperUpStatus;
-		Comodity paperDownStatus;
+		Commodity paperUpStatus;
+		Commodity paperDownStatus;
 
 		unsigned int angularVelocity;
 		unsigned int maxSpinsQuantity;
@@ -55,8 +55,8 @@ class Motor : public Thread {
 
 		Status getStatus() const;
 
-		Comodity getPaperUpStatus() const;
-		Comodity getPaperDownStatus() const;
+		Commodity getPaperUpStatus() const;
+		Commodity getPaperDownStatus() const;
 };
 
 #endif
