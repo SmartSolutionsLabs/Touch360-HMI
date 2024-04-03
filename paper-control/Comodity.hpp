@@ -2,7 +2,7 @@
 #define COMODITY_INC
 
 enum Comodity {
-	OK,
+	PRESENT,
 	MISSING,
 	CUT
 };
