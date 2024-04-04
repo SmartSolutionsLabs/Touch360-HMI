@@ -71,4 +71,45 @@ void Display::parseIncome(void * data) {
 	}
 	Serial.print("\ntext: "); Serial.println(STONER.text);
 	Serial.print("END\n\n");
+
+	switch(STONER.cmd) {
+		case 0: // Display has booted
+			return;
+
+		case 4097:
+		case 4098: // Buttons
+			if(widgetName.startsWith("btnStart")) {
+				return;
+			}
+
+			if(widgetName.startsWith("btnStop")) {
+				return;
+			}
+
+			if(widgetName.startsWith("btnHome")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"back_win\",\"type\":\"window\"}>ET"));
+				this->control->setDisplaySending();
+				return;
+			}
+
+			if(widgetName.startsWith("btnConfig")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"configPage\"}>ET"));
+				this->control->setDisplaySending();
+				return;
+			}
+
+			if(widgetName.startsWith("btnHistory")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"historyPage\"}>ET"));
+				this->control->setDisplaySending();
+				return;
+			}
+
+			if(widgetName.startsWith("btnLogo")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"sslPage\"}>ET"));
+				this->control->setDisplaySending();
+				return;
+			}
+
+			break;
+	}
 }
