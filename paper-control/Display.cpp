@@ -87,7 +87,7 @@ void Display::parseIncome(void * data) {
 			}
 
 			if(widgetName.startsWith("btnHome")) {
-				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"back_win\",\"type\":\"window\"}>ET"));
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"home_page\"}>ET"));
 				this->control->setDisplaySending();
 				return;
 			}
