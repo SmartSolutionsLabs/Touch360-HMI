@@ -11,6 +11,7 @@ class Motor : public Thread {
 	protected:
 		static Motor * motor;
 		Motor();
+		Motor(const char * name);
 
 		Commodity paperUpStatus;
 		Commodity paperDownStatus;
@@ -31,6 +32,10 @@ class Motor : public Thread {
 		static Motor * getInstance();
 		Motor(Motor &other) = delete;
 		void operator=(const Motor &) = delete;
+
+		void run(void* data);
+
+		void parseIncome(void * data);
 
 		/**
 		 * Only can change it when motor is not running.
