@@ -111,5 +111,72 @@ void Display::parseIncome(void * data) {
 			}
 
 			break;
+
+		case 4208: // Edit
+			if(widgetName.startsWith("edtPaper1")) {
+				this->control->setRollName(0, STONER.text);
+				return;
+			}
+			if(widgetName.startsWith("edtPaper2")) {
+				this->control->setRollName(1, STONER.text);
+				return;
+			}
+			if(widgetName.startsWith("edtPaper3")) {
+				this->control->setRollName(2, STONER.text);
+				return;
+			}
+
+
+		case 4225: // Spins
+			if(widgetName.startsWith("spinner1M")) {
+				this->control->setRollQuantity(0, 3, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner1C")) {
+				this->control->setRollQuantity(0, 2, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner1D")) {
+				this->control->setRollQuantity(0, 1, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner1U")) {
+				this->control->setRollQuantity(0, 0, STONER.long_value);
+				return;
+			}
+
+			if(widgetName.startsWith("spinner2M")) {
+				this->control->setRollQuantity(1, 3, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner2C")) {
+				this->control->setRollQuantity(1, 2, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner2D")) {
+				this->control->setRollQuantity(1, 1, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner2U")) {
+				this->control->setRollQuantity(1, 0, STONER.long_value);
+				return;
+			}
+
+			if(widgetName.startsWith("spinner3M")) {
+				this->control->setRollQuantity(2, 3, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner3C")) {
+				this->control->setRollQuantity(2, 2, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner3D")) {
+				this->control->setRollQuantity(2, 1, STONER.long_value);
+				return;
+			}
+			if(widgetName.startsWith("spinner3U")) {
+				this->control->setRollQuantity(2, 0, STONER.long_value);
+				return;
+			}
 	}
 }
