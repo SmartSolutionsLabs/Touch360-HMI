@@ -13,7 +13,7 @@ Control * Control::getInstance() {
 Control::Control() : displayStatus(RECEIVING), messagesQueue(25) {
 	unsigned int i = (sizeof(this->rolls) / sizeof(*this->rolls));
 	char strRoll[5];
-	while(--i) {
+	while(i--) {
 		sprintf(strRoll, "roll%d", i);
 		this->rolls[i].preferences.begin(strRoll, false);
 		this->rolls[i].maxSpinsQuantity = this->rolls[i].preferences.getUInt("spins", 0);
