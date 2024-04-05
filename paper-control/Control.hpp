@@ -3,10 +3,21 @@
 
 #include "Queue.h"
 
+#include <Preferences.h>
+
+struct Roll {
+	unsigned int maxSpinsQuantity;
+	Queue<unsigned int> history;
+	String name;
+	Preferences preferences;
+};
+
 class Control {
 	protected:
 		static Control * control;
 		Control();
+
+		Roll rolls[3];
 
 	public:
 		enum DisplayStatus {
@@ -35,6 +46,10 @@ class Control {
 		void setDisplayReceiving();
 
 		DisplayStatus getDisplayStatus() const;
+
+		void setRollQuantity(unsigned int typeIndex, unsigned int position, unsigned int value);
+
+		void setRollName(unsigned int typeIndex, const char * name);
 
 	private:
 		DisplayStatus displayStatus;
