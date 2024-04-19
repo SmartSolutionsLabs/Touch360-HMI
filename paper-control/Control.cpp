@@ -11,17 +11,13 @@ Control * Control::getInstance() {
 }
 
 Control::Control() : displayStatus(RECEIVING), messagesQueue(25) {
-	unsigned int i = (sizeof(this->rolls) / sizeof(*this->rolls));
+	unsigned int rollIndex = (sizeof(this->rolls) / sizeof(*this->rolls));
 	char strRoll[5];
-	while(i--) {
-		sprintf(strRoll, "roll%d", i);
-		this->rolls[i].preferences.begin(strRoll, false);
-		this->rolls[i].maxSpinsQuantity = this->rolls[i].preferences.getUInt("spins", 0);
-		this->rolls[i].name = this->rolls[i].preferences.getString("name", strRoll);
-
-		if(i == 0) {
-			break;
-		}
+	while(rollIndex--) {
+		sprintf(strRoll, "roll%d", rollIndex);
+		this->rolls[rollIndex].preferences.begin(strRoll, false);
+		this->rolls[rollIndex].maxSpinsQuantity = this->rolls[rollIndex].preferences.getUInt("spins", 0);
+		this->rolls[rollIndex].name = this->rolls[rollIndex].preferences.getString("name", strRoll);
 	}
 }
 
