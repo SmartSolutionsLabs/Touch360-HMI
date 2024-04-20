@@ -49,6 +49,8 @@ class Control {
 
 		void setRollQuantity(unsigned int typeIndex, unsigned int position, unsigned int value);
 
+		unsigned int getRollQuantity(unsigned int typeIndex) const;
+
 		void setRollName(unsigned int typeIndex, const char * name);
 
 		String getRollName(unsigned int typeIndex) const;

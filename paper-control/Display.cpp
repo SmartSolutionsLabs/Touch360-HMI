@@ -183,7 +183,16 @@ void Display::parseIncome(void * data) {
 
 		case 8199:
 			if(STONER.len == 10) { //configuration page
+				unsigned int spinsQuantity = 0;
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"edit\",\"widget\":\"edtPaper1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
+
+				spinsQuantity = this->control->getRollQuantity(0);
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"text_selector\",\"widget\":\"spinner11_14\",\"value\":[" + String(spinsQuantity % 10) + String(",") + ((spinsQuantity / 10) % 10) + String(",") + ((spinsQuantity / 100) % 10) + String(",") + ((spinsQuantity / 1000) % 10) + String("]}>ET")));
+				spinsQuantity = this->control->getRollQuantity(1);
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"text_selector\",\"widget\":\"spinner21_24\",\"value\":[" + String(spinsQuantity % 10) + String(",") + ((spinsQuantity / 10) % 10) + String(",") + ((spinsQuantity / 100) % 10) + String(",") + ((spinsQuantity / 1000) % 10) + String("]}>ET")));
+				spinsQuantity = this->control->getRollQuantity(2);
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"text_selector\",\"widget\":\"spinner31_34\",\"value\":[" + String(spinsQuantity % 10) + String(",") + ((spinsQuantity / 10) % 10) + String(",") + ((spinsQuantity / 100) % 10) + String(",") + ((spinsQuantity / 1000) % 10) + String("]}>ET")));
+
 				this->control->setDisplaySending();
 				return;
 			}
