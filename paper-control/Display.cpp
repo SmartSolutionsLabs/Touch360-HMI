@@ -182,6 +182,12 @@ void Display::parseIncome(void * data) {
 			break;
 
 		case 8199:
+			if(STONER.len == 9) { //home page
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSelected1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
+				this->control->setDisplaySending();
+				return;
+			}
+
 			if(STONER.len == 10) { //configuration page
 				unsigned int spinsQuantity = 0;
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"edit\",\"widget\":\"edtPaper1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
