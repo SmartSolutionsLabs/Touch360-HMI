@@ -178,5 +178,16 @@ void Display::parseIncome(void * data) {
 				this->control->setRollQuantity(2, 0, STONER.long_value);
 				return;
 			}
+
+			break;
+
+		case 8199:
+			if(STONER.len == 10) { //configuration page
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"edit\",\"widget\":\"edtPaper1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
+				this->control->setDisplaySending();
+				return;
+			}
+
+			break;
 	}
 }

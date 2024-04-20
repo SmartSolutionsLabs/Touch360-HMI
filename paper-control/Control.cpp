@@ -71,3 +71,7 @@ void Control::setRollName(unsigned int typeIndex, const char * name) {
 	this->rolls[typeIndex].name = String(name);
 	this->rolls[typeIndex].preferences.putString("name", this->rolls[typeIndex].name);
 }
+
+String Control::getRollName(unsigned int typeIndex) const {
+	return this->rolls[typeIndex].name;
+}

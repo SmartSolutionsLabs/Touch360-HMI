@@ -51,6 +51,8 @@ class Control {
 
 		void setRollName(unsigned int typeIndex, const char * name);
 
+		String getRollName(unsigned int typeIndex) const;
+
 	private:
 		DisplayStatus displayStatus;
 };
