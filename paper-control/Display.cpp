@@ -128,53 +128,53 @@ void Display::parseIncome(void * data) {
 
 
 		case 4225: // Spins
-			if(widgetName.startsWith("spinner1M")) {
+			if(widgetName.startsWith("spinner14")) {
 				this->control->setRollQuantity(0, 3, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner1C")) {
+			if(widgetName.startsWith("spinner13")) {
 				this->control->setRollQuantity(0, 2, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner1D")) {
+			if(widgetName.startsWith("spinner12")) {
 				this->control->setRollQuantity(0, 1, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner1U")) {
+			if(widgetName.startsWith("spinner11")) {
 				this->control->setRollQuantity(0, 0, STONER.long_value);
 				return;
 			}
 
-			if(widgetName.startsWith("spinner2M")) {
+			if(widgetName.startsWith("spinner24")) {
 				this->control->setRollQuantity(1, 3, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner2C")) {
+			if(widgetName.startsWith("spinner23")) {
 				this->control->setRollQuantity(1, 2, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner2D")) {
+			if(widgetName.startsWith("spinner22")) {
 				this->control->setRollQuantity(1, 1, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner2U")) {
+			if(widgetName.startsWith("spinner21")) {
 				this->control->setRollQuantity(1, 0, STONER.long_value);
 				return;
 			}
 
-			if(widgetName.startsWith("spinner3M")) {
+			if(widgetName.startsWith("spinner34")) {
 				this->control->setRollQuantity(2, 3, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner3C")) {
+			if(widgetName.startsWith("spinner33")) {
 				this->control->setRollQuantity(2, 2, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner3D")) {
+			if(widgetName.startsWith("spinner32")) {
 				this->control->setRollQuantity(2, 1, STONER.long_value);
 				return;
 			}
-			if(widgetName.startsWith("spinner3U")) {
+			if(widgetName.startsWith("spinner31")) {
 				this->control->setRollQuantity(2, 0, STONER.long_value);
 				return;
 			}
