@@ -112,6 +112,24 @@ void Display::parseIncome(void * data) {
 
 			break;
 
+		case 4144: {
+			if(widgetName.startsWith("typeSelected1")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(0)) + String("\"}>ET")));
+				this->control->setDisplaySending();
+				return;
+			}
+			if(widgetName.startsWith("typeSelected2")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(1)) + String("\"}>ET")));
+				this->control->setDisplaySending();
+				return;
+			}
+			if(widgetName.startsWith("typeSelected3")) {
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(2)) + String("\"}>ET")));
+				this->control->setDisplaySending();
+				return;
+			}
+		}
+
 		case 4208: // Edit
 			if(widgetName.startsWith("edtPaper1")) {
 				this->control->setRollName(0, STONER.text);
