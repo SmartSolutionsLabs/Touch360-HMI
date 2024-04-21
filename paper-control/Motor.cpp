@@ -29,8 +29,10 @@ unsigned int Motor::getMaxSpinsQuantity() const {
 unsigned int Motor::getRemainingSpinsQuantity() const {
 }
 
-void Motor::decrementSpinsQuantity() {
-	--this->remainingSpinsQuantity;
+void Motor::incrementCurrentSpinsQuantity() {
+	if(this->currentSpinsQuantity < this->maxSpinsQuantity) {
+		++this->currentSpinsQuantity;
+	}
 }
 
 void Motor::halt() {

@@ -18,7 +18,7 @@ class Motor : public Thread {
 
 		unsigned int angularVelocity;
 		unsigned int maxSpinsQuantity;
-		unsigned int remainingSpinsQuantity;
+		unsigned int currentSpinsQuantity;
 
 		enum Status {
 			OFF,
@@ -46,7 +46,7 @@ class Motor : public Thread {
 		unsigned int getMaxSpinsQuantity() const;
 		unsigned int getRemainingSpinsQuantity() const;
 
-		void decrementSpinsQuantity();
+		void incrementCurrentSpinsQuantity();
 
 		/**
 		 * Halt the motor as an emergency.
