@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="800px" height="480px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 800 480"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:black;stroke-width:2;stroke-miterlimit:22.9256}
+    .fil1 {fill:none}
+    .fil2 {fill:#666666}
+    .fil3 {fill:#666666}
+    .fil0 {fill:#999999}
+   ]]>
+  </style>
+ </defs>
+ <g id="Capa_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <rect class="fil0" width="800" height="480"/>
+  <g id="_2178569062512">
+   <rect class="fil0" x="605" y="95" width="180" height="120" rx="11.41" ry="10"/>
+   <rect class="fil0" x="605" y="225" width="180" height="120" rx="11.41" ry="10"/>
+   <rect class="fil0" x="415" y="95" width="180" height="120" rx="11.41" ry="10"/>
+   <rect class="fil0" x="415" y="225" width="180" height="120" rx="11.41" ry="10"/>
+  </g>
+  <rect class="fil1 str0" width="120" height="480"/>
+  <polygon class="fil2" points="120,0 0,0 0,480 120,480 "/>
+  <path class="fil3" d="M120 115l-85 0c-11,0 -20,12 -20,26.67l0 26.66c0,14.67 9,26.67 20,26.67l85 0 0 -80z"/>
+  <path class="fil3" d="M120 15l-85 0c-11,0 -20,12 -20,26.67l0 26.66c0,14.67 9,26.67 20,26.67l85 0 0 -80z"/>
+  <path class="fil0" d="M121 215l-85.81 0c-11.11,0 -20.19,12 -20.19,26.67l0 26.67c0,14.66 9.08,26.66 20.19,26.66l85.81 0 0 -80z"/>
+  <path class="fil3" d="M122 315l-85 0c-11,0 -20,12 -20,26.67l0 26.66c0,14.67 9,26.67 20,26.67l85 0 0 -80z"/>
+ </g>
+</svg>
