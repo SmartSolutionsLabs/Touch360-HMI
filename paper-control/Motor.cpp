@@ -13,7 +13,7 @@ Motor * Motor::getInstance() {
 Motor::Motor() : Thread("mtr") {
 }
 
-Motor::Motor(const char * name) : Thread(name) {
+Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0) {
 }
 
 void Motor::setMaxSpinsQuantity(unsigned int maxSpinsQuantity) {
