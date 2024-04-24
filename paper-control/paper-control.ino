@@ -1,7 +1,12 @@
 #include "Display.hpp"
+#include "Control.hpp"
+#include "Motor.hpp"
+
+Motor * motor;
 
 // When laser detects paper cut
 void IRAM_ATTR interruptCutterHandler() {
+	motor->incrementCurrentSpinsQuantity();
 }
 
 void setup() {
@@ -10,6 +15,8 @@ void setup() {
 	pinMode(26, OUTPUT);
 	pinMode(27, OUTPUT);
 	Serial.begin(115200);
+
+	motor = Motor::getInstance();
 
 	attachInterrupt(digitalPinToInterrupt(35), interruptCutterHandler, FALLING);
 
