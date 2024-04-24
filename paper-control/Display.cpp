@@ -1,4 +1,5 @@
 #include "Display.hpp"
+#include "Motor.hpp"
 
 #include "stone.h"
 
@@ -79,10 +80,12 @@ void Display::parseIncome(void * data) {
 		case 4097:
 		case 4098: // Buttons
 			if(widgetName.startsWith("btnStart")) {
+				Motor::getInstance()->toggleStatus();
 				return;
 			}
 
 			if(widgetName.startsWith("btnStop")) {
+				Motor::getInstance()->halt();
 				return;
 			}
 
@@ -116,6 +119,7 @@ void Display::parseIncome(void * data) {
 			if(widgetName.startsWith("typeSelected1")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(0)) + String("\"}>ET")));
 				this->control->setDisplaySending();
+				Motor::getInstance()->setMaxSpinsQuantity(this->control->getRollQuantity(0));
 				return;
 			}
 			if(widgetName.startsWith("typeSelected2")) {
