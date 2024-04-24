@@ -8,6 +8,14 @@
  * The single motor for controlling it.
  */
 class Motor : public Thread {
+	public:
+		enum Status {
+			OFF,
+			RUNNING,
+			PAUSED,
+			HALTED
+		};
+
 	protected:
 		static Motor * motor;
 		Motor();
@@ -20,12 +28,7 @@ class Motor : public Thread {
 		unsigned int maxSpinsQuantity;
 		volatile unsigned int currentSpinsQuantity;
 
-		enum Status {
-			OFF,
-			RUNNING,
-			PAUSED,
-			HALTED
-		} status;
+		Status status;
 
 	public:
 		// For singleton
