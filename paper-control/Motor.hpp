@@ -18,7 +18,7 @@ class Motor : public Thread {
 
 		unsigned int angularVelocity;
 		unsigned int maxSpinsQuantity;
-		unsigned int currentSpinsQuantity;
+		volatile unsigned int currentSpinsQuantity;
 
 		enum Status {
 			OFF,
@@ -44,7 +44,7 @@ class Motor : public Thread {
 
 		unsigned int getAngularVelocity() const;
 		unsigned int getMaxSpinsQuantity() const;
-		unsigned int getRemainingSpinsQuantity() const;
+		unsigned int getCurrentSpinsQuantity() const;
 
 		void incrementCurrentSpinsQuantity();
 

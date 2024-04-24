@@ -26,7 +26,8 @@ unsigned int Motor::getAngularVelocity() const {
 unsigned int Motor::getMaxSpinsQuantity() const {
 }
 
-unsigned int Motor::getRemainingSpinsQuantity() const {
+unsigned int Motor::getCurrentSpinsQuantity() const {
+	return this->currentSpinsQuantity;
 }
 
 void Motor::incrementCurrentSpinsQuantity() {
@@ -61,4 +62,7 @@ Commodity Motor::getPaperDownStatus() const {
 }
 
 void Motor::run(void* data) {
+}
+
+void Motor::parseIncome(void * data) {
 }
