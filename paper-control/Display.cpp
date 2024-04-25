@@ -81,12 +81,26 @@ void Display::parseIncome(void * data) {
 		case 4098: // Buttons
 			if(widgetName.startsWith("btnStart")) {
 				Motor::getInstance()->toggleStatus();
+
+				Motor::Status motorStatus = Motor::getInstance()->getStatus();
+				if(motorStatus == Motor::RUNNING) {
+					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Pausar\"}>ET"));
+					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":false}>ET"));
+				}
+				else {
+					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Seguir\"}>ET"));
+					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
+				}
+				this->control->setDisplaySending();
+
 				return;
 			}
 
 			if(widgetName.startsWith("btnStop")) {
 				Motor::getInstance()->halt();
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"0\"}>ET"));
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Iniciar\"}>ET"));
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 				this->control->setDisplaySending();
 				Motor::getInstance()->resetCurrentSpinsQuantity();
 				return;
