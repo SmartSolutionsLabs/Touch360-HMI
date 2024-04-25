@@ -25,6 +25,13 @@ class Control {
 			RECEIVING
 		};
 
+		enum View {
+			HOME,
+			CONFIGURATION,
+			HISTORY,
+			CREDITS
+		} view;
+
 		// For singleton
 		static Control * getInstance();
 		Control(Control &other) = delete;

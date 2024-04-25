@@ -10,7 +10,7 @@ Control * Control::getInstance() {
 	return control;
 }
 
-Control::Control() : displayStatus(RECEIVING), messagesQueue(25) {
+Control::Control() : displayStatus(RECEIVING), messagesQueue(25), view(HOME) {
 	unsigned int rollIndex = (sizeof(this->rolls) / sizeof(*this->rolls));
 	char strRoll[5];
 	while(rollIndex--) {

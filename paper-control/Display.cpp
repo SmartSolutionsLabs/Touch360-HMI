@@ -220,12 +220,16 @@ void Display::parseIncome(void * data) {
 
 		case 8199:
 			if(STONER.len == 9) { //home page
+				this->control->view = Control::HOME;
+
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSelected1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
 				this->control->setDisplaySending();
 				return;
 			}
 
 			if(STONER.len == 10) { //configuration page
+				this->control->view = Control::CONFIGURATION;
+
 				unsigned int spinsQuantity = 0;
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"edit\",\"widget\":\"edtPaper1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
 
@@ -238,6 +242,14 @@ void Display::parseIncome(void * data) {
 
 				this->control->setDisplaySending();
 				return;
+			}
+
+			if(STONER.len == 11) { //history page
+				this->control->view = Control::HISTORY;
+			}
+
+			if(STONER.len == 7) { //credits page
+				this->control->view = Control::CREDITS;
 			}
 
 			break;
