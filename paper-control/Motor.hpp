@@ -45,6 +45,8 @@ class Motor : public Thread {
 		 */
 		void setMaxSpinsQuantity(unsigned int);
 
+		void resetCurrentSpinsQuantity();
+
 		unsigned int getAngularVelocity() const;
 		unsigned int getMaxSpinsQuantity() const;
 		unsigned int getCurrentSpinsQuantity() const;

@@ -20,10 +20,15 @@ void Motor::setMaxSpinsQuantity(unsigned int maxSpinsQuantity) {
 	this->maxSpinsQuantity = maxSpinsQuantity;
 }
 
+void Motor::resetCurrentSpinsQuantity() {
+	this->currentSpinsQuantity = 0;
+}
+
 unsigned int Motor::getAngularVelocity() const {
 }
 
 unsigned int Motor::getMaxSpinsQuantity() const {
+	return this->maxSpinsQuantity;
 }
 
 unsigned int Motor::getCurrentSpinsQuantity() const {

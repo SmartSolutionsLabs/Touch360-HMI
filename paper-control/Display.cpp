@@ -86,6 +86,9 @@ void Display::parseIncome(void * data) {
 
 			if(widgetName.startsWith("btnStop")) {
 				Motor::getInstance()->halt();
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"0\"}>ET"));
+				this->control->setDisplaySending();
+				Motor::getInstance()->resetCurrentSpinsQuantity();
 				return;
 			}
 
@@ -125,11 +128,13 @@ void Display::parseIncome(void * data) {
 			if(widgetName.startsWith("typeSelected2")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(1)) + String("\"}>ET")));
 				this->control->setDisplaySending();
+				Motor::getInstance()->setMaxSpinsQuantity(this->control->getRollQuantity(1));
 				return;
 			}
 			if(widgetName.startsWith("typeSelected3")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(2)) + String("\"}>ET")));
 				this->control->setDisplaySending();
+				Motor::getInstance()->setMaxSpinsQuantity(this->control->getRollQuantity(2));
 				return;
 			}
 		}
