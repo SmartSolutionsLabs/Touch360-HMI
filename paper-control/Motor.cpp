@@ -13,7 +13,7 @@ Motor * Motor::getInstance() {
 Motor::Motor() : Thread("mtr") {
 }
 
-Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0) {
+Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0) {
 }
 
 void Motor::setMaxSpinsQuantity(unsigned int maxSpinsQuantity) {
@@ -25,6 +25,7 @@ void Motor::resetCurrentSpinsQuantity() {
 }
 
 unsigned int Motor::getAngularVelocity() const {
+	return this->angularVelocity;
 }
 
 unsigned int Motor::getMaxSpinsQuantity() const {
@@ -41,8 +42,15 @@ void Motor::incrementCurrentSpinsQuantity() {
 	}
 }
 
+unsigned int Motor::incrementAngularVelocity() {
+	return ++this->angularVelocity;
+}
+
 void Motor::halt() {
 	this->status = Motor::HALTED;
+
+	this->angularVelocity = 0;
+	esp_timer_stop(this->secondHandTimer);
 }
 
 void Motor::toggleStatus() {
@@ -52,6 +60,17 @@ void Motor::toggleStatus() {
 	}
 
 	this->status = Motor::RUNNING;
+
+	this->angularVelocity = 0;
+
+	const esp_timer_create_args_t periodic_timer_args = {
+			.callback = &interruptMotorSecondHand,
+			.arg = NULL,
+			.dispatch_method = ESP_TIMER_TASK,
+			.name = "periodic_timer"
+	};
+	esp_timer_create(&periodic_timer_args, &this->secondHandTimer);
+	esp_timer_start_periodic(this->secondHandTimer, 1000000); // Each 1 second
 }
 
 Motor::Status Motor::getStatus() const {

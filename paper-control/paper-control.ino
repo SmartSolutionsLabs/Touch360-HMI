@@ -9,6 +9,12 @@ void IRAM_ATTR interruptCutterHandler() {
 	motor->incrementCurrentSpinsQuantity();
 }
 
+void IRAM_ATTR interruptMotorSecondHand(void* arg) {
+	if(motor->incrementAngularVelocity() > 4) {
+		esp_timer_stop(motor->secondHandTimer);
+	}
+}
+
 void setup() {
 	Serial2.begin(115200);
 	pinMode(25, OUTPUT);

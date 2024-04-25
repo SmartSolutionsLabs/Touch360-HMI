@@ -4,6 +4,8 @@
 #include "Thread.hpp"
 #include "Commodity.hpp"
 
+void IRAM_ATTR interruptMotorSecondHand(void* arg);
+
 /**
  * The single motor for controlling it.
  */
@@ -31,6 +33,8 @@ class Motor : public Thread {
 		Status status;
 
 	public:
+		esp_timer_handle_t secondHandTimer;
+
 		// For singleton
 		static Motor * getInstance();
 		Motor(Motor &other) = delete;
@@ -52,6 +56,8 @@ class Motor : public Thread {
 		unsigned int getCurrentSpinsQuantity() const;
 
 		void incrementCurrentSpinsQuantity();
+
+		unsigned int incrementAngularVelocity();
 
 		/**
 		 * Halt the motor as an emergency.
