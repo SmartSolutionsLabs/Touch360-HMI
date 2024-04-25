@@ -38,13 +38,9 @@ void Display::run(void* data) {
 					if(++pauseFlag & 1) { // Each two times
 						vTaskDelay(15 / portTICK_PERIOD_MS); // Lightweight pause
 					}
-					String tempItem = this->control->messagesQueue.pop();
-					Serial2.print(tempItem);
-					Serial.print("Out cmd: ");
-					Serial.println(tempItem);
+					Serial2.print(this->control->messagesQueue.pop());
 				}
 				pauseFlag = 0;
-				Serial2.print("\n");
 				Serial2.flush();
 			}
 
