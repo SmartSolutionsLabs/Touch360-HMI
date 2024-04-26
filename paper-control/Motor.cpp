@@ -98,7 +98,7 @@ void Motor::run(void* data) {
 		vTaskDelay(xDelay);
 
 		// Only repaint when motor is working
-		if(motor->getStatus() != Motor::RUNNING) {
+		if(this->status != Motor::RUNNING) {
 			continue;
 		}
 
