@@ -86,6 +86,7 @@ void Display::parseIncome(void * data) {
 				else {
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Seguir\"}>ET"));
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
+					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStop\",\"enable\":true}>ET"));
 				}
 				this->control->setDisplaySending();
 
