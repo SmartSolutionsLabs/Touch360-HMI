@@ -33,7 +33,7 @@ class Motor : public Thread {
 		Status status;
 
 	public:
-		esp_timer_handle_t secondHandTimer;
+		esp_timer_handle_t secondHandTimer = nullptr;
 
 		// For singleton
 		static Motor * getInstance();

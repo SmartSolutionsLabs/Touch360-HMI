@@ -14,6 +14,8 @@ Motor::Motor() : Thread("mtr") {
 }
 
 Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0) {
+	// This motor will run forever
+	this->start();
 }
 
 void Motor::setMaxSpinsQuantity(unsigned int maxSpinsQuantity) {
@@ -50,7 +52,11 @@ void Motor::halt() {
 	this->status = Motor::HALTED;
 
 	this->angularVelocity = 0;
-	esp_timer_stop(this->secondHandTimer);
+
+	if(this->secondHandTimer != nullptr) {
+		esp_timer_stop(this->secondHandTimer);
+		this->secondHandTimer = nullptr;
+	}
 }
 
 void Motor::toggleStatus() {
@@ -86,6 +92,18 @@ Commodity Motor::getPaperDownStatus() const {
 }
 
 void Motor::run(void* data) {
+	TickType_t xDelay = 200 / portTICK_PERIOD_MS;
+
+	while(1) {
+		vTaskDelay(xDelay);
+
+		// Only repaint when motor is working
+		if(this->control->view == Control::HOME && motor->getStatus() == Motor::RUNNING) {
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
+			this->control->setDisplaySending();
+		}
+	}
 }
 
 void Motor::parseIncome(void * data) {

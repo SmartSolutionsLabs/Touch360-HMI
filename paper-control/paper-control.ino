@@ -9,9 +9,11 @@ void IRAM_ATTR interruptCutterHandler() {
 	motor->incrementCurrentSpinsQuantity();
 }
 
+// Controlling motor acceleration
 void IRAM_ATTR interruptMotorSecondHand(void* arg) {
 	if(motor->incrementAngularVelocity() > 4) {
 		esp_timer_stop(motor->secondHandTimer);
+		motor->secondHandTimer = nullptr;
 	}
 }
 
@@ -34,11 +36,4 @@ TickType_t xDelay = 120 / portTICK_PERIOD_MS;
 
 void loop() {
 	vTaskDelay(xDelay);
-
-	// Only repaint when motor is working
-	if(motor->getStatus() == Motor::RUNNING) {
-		Control::getInstance()->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(motor->getCurrentSpinsQuantity()) + String("\"}>ET")));
-		Control::getInstance()->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * motor->getCurrentSpinsQuantity()) / motor->getMaxSpinsQuantity() * 100) ) + "}>ET"));
-		Control::getInstance()->setDisplaySending();
-	}
 }
