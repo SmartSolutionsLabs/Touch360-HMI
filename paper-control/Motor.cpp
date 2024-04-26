@@ -98,11 +98,17 @@ void Motor::run(void* data) {
 		vTaskDelay(xDelay);
 
 		// Only repaint when motor is working
-		if(this->control->view == Control::HOME && motor->getStatus() == Motor::RUNNING) {
-			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
-			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
-			this->control->setDisplaySending();
+		if(motor->getStatus() != Motor::RUNNING) {
+			continue;
 		}
+
+		if(this->control->view != Control::HOME) {
+			continue;
+		}
+
+		this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
+		this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
+		this->control->setDisplaySending();
 	}
 }
 
