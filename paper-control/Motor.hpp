@@ -15,7 +15,8 @@ class Motor : public Thread {
 			OFF,
 			RUNNING,
 			PAUSED,
-			HALTED
+			HALTED,
+			FINISHED
 		};
 
 	protected:

@@ -76,10 +76,13 @@ void Display::parseIncome(void * data) {
 		case 4097:
 		case 4098: // Buttons
 			if(widgetName.startsWith("btnStart")) {
+				if(Motor::getInstance()->getStatus() == Motor::HALTED || Motor::getInstance()->getStatus() == Motor::FINISHED) {
+					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_color\",\"type\":\"widget\",\"widget\":\"barProgress\",\"color_object\":\"fg_color\",\"color\":4278190334}>ET"));
+				}
+
 				Motor::getInstance()->toggleStatus();
 
-				Motor::Status motorStatus = Motor::getInstance()->getStatus();
-				if(motorStatus == Motor::RUNNING) {
+				if(Motor::getInstance()->getStatus() == Motor::RUNNING) {
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Pausar\"}>ET"));
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":false}>ET"));
 				}
@@ -88,6 +91,7 @@ void Display::parseIncome(void * data) {
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStop\",\"enable\":true}>ET"));
 				}
+
 				this->control->setDisplaySending();
 
 				return;

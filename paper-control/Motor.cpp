@@ -104,6 +104,7 @@ void Motor::run(void* data) {
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {
 			this->halt();
+			this->status = Motor::FINISHED; // Stopped gracefully
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_color\",\"type\":\"widget\",\"widget\":\"barProgress\",\"color_object\":\"fg_color\",\"color\":4278255104}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStop\",\"enable\":false}>ET"));
