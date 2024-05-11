@@ -18,7 +18,7 @@ void IRAM_ATTR interruptMotorSecondHand(void* arg) {
 }
 
 void setup() {
-	Serial2.begin(115200);
+	Serial2.begin(115200, SERIAL_8N1, 5, 14);
 	pinMode(25, OUTPUT);
 	pinMode(26, OUTPUT);
 	pinMode(27, OUTPUT);
