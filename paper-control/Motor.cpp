@@ -148,6 +148,10 @@ void Motor::run(void* data) {
 		if(this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) {
 			this->halt();
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStart\",\"enable\":false}>ET"));
+		}
+		else {
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStart\",\"enable\":true}>ET"));
 		}
 
 		this->control->setDisplaySending();
