@@ -9,7 +9,6 @@ Display::Display(const char * name) : Thread(name) {
 void Display::run(void* data) {
 	extern unsigned char receive_over_flage;
 
-	unsigned long timer = xTaskGetTickCount();
 	TickType_t xDelay = 1 / portTICK_PERIOD_MS;
 	Serial2.flush();
 	Serial.print("Display::run");
