@@ -1,5 +1,7 @@
 #include "Motor.hpp"
 
+#include <Adafruit_PCF8574.h>
+
 Motor * Motor::motor = nullptr;
 
 Motor * Motor::getInstance() {
@@ -13,7 +15,7 @@ Motor * Motor::getInstance() {
 Motor::Motor() : Thread("mtr") {
 }
 
-Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0) {
+Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING) {
 	// This motor will run forever
 	this->start();
 }
@@ -94,8 +96,61 @@ Commodity Motor::getPaperDownStatus() const {
 void Motor::run(void* data) {
 	TickType_t xDelay = 200 / portTICK_PERIOD_MS;
 
+	Wire.begin(4, 16);
+	Adafruit_PCF8574 remoteControl; // laser for papers and button inputs
+
+	if(!remoteControl.begin(0x22, &Wire)) {
+		Serial.println("Couldn't find PCF8574 in 0x22");
+
+		//Show warnings
+	}
+	else {
+		// Setting
+		remoteControl.pinMode(0, INPUT_PULLUP); // paper up
+		remoteControl.pinMode(1, INPUT_PULLUP); // paper down
+	}
+
 	while(1) {
 		vTaskDelay(xDelay);
+
+		// Test up paper and change it
+		if(!remoteControl.digitalRead(0)) {
+			if(this->paperUpStatus != Commodity::PRESENT) {
+				this->paperUpStatus = Commodity::PRESENT;
+				Serial.print("Paper up present\n");
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperUpX\",\"visible\":false}>ET"));
+			}
+		}
+		else {
+			if(this->paperUpStatus != Commodity::CUT) {
+				this->paperUpStatus = Commodity::CUT;
+				Serial.print("Paper up cut\n");
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperUpX\",\"visible\":true}>ET"));
+			}
+		}
+
+		// Test down paper and change it
+		if(!remoteControl.digitalRead(1)) {
+			if(this->paperDownStatus != Commodity::PRESENT) {
+				this->paperDownStatus = Commodity::PRESENT;
+				Serial.print("Paper down present\n");
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperDownX\",\"visible\":false}>ET"));
+			}
+		}
+		else {
+			if(this->paperDownStatus != Commodity::CUT) {
+				this->paperDownStatus = Commodity::CUT;
+				Serial.print("Paper down cut\n");
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperDownX\",\"visible\":true}>ET"));
+			}
+		}
+
+		if(this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) {
+			this->halt();
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
+		}
+
+		this->control->setDisplaySending();
 
 		// Only repaint when motor is working
 		if(this->status != Motor::RUNNING) {
