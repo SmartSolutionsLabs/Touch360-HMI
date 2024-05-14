@@ -1,6 +1,7 @@
 #include "Motor.hpp"
 
 #include <Adafruit_PCF8574.h>
+#include <Adafruit_PWMServoDriver.h>
 
 Motor * Motor::motor = nullptr;
 
@@ -78,7 +79,7 @@ void Motor::toggleStatus() {
 			.name = "periodic_timer"
 	};
 	esp_timer_create(&periodic_timer_args, &this->secondHandTimer);
-	esp_timer_start_periodic(this->secondHandTimer, 1000000); // Each 1 second
+	esp_timer_start_periodic(this->secondHandTimer, 1000000 / 10); // Each 1/10 second
 }
 
 Motor::Status Motor::getStatus() const {
@@ -97,6 +98,20 @@ void Motor::run(void* data) {
 	TickType_t xDelay = 200 / portTICK_PERIOD_MS;
 
 	Wire.begin(4, 16);
+
+	Adafruit_PWMServoDriver motorControl(0x40, Wire);
+	motorControl.begin();
+	motorControl.setPin(0, 0);
+	motorControl.setPin(1, 0);
+	motorControl.setPin(2, 0);
+	motorControl.setPin(3, 0);
+	motorControl.setPin(4, 0);
+	motorControl.setPin(5, 0);
+	motorControl.setPin(6, 0);
+	motorControl.setPin(7, 0); // Attached to this motor
+	motorControl.setOscillatorFrequency(27000000);
+	motorControl.setPWMFreq(1000);
+
 	Adafruit_PCF8574 remoteControl; // laser for papers and button inputs
 
 	if(!remoteControl.begin(0x22, &Wire)) {
@@ -110,8 +125,16 @@ void Motor::run(void* data) {
 		remoteControl.pinMode(1, INPUT_PULLUP); // paper down
 	}
 
+	unsigned int angularVelocity = 0; // For comparing and change it if is needed
+
 	while(1) {
 		vTaskDelay(xDelay);
+
+		if(angularVelocity != 0 && this->status == Motor::HALTED) {
+			angularVelocity = 0;
+			motorControl.setPin(7, 0);
+			Serial.print("Halt&setPWM 0");
+		}
 
 		// Test up paper and change it
 		if(!remoteControl.digitalRead(0)) {
@@ -159,6 +182,15 @@ void Motor::run(void* data) {
 		// Only repaint when motor is working
 		if(this->status != Motor::RUNNING) {
 			continue;
+		}
+
+		// Translate the local velocity to this motor
+		if(this->angularVelocity != angularVelocity) {
+			//~ motorControl.setPWM(7, 0, this->angularVelocity);
+			motorControl.setPin(7, this->angularVelocity);
+			angularVelocity = this->angularVelocity;
+			Serial.print("angVel:");
+			Serial.println(this->angularVelocity);
 		}
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {

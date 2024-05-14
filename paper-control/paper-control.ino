@@ -11,7 +11,7 @@ void IRAM_ATTR interruptCutterHandler() {
 
 // Controlling motor acceleration
 void IRAM_ATTR interruptMotorSecondHand(void* arg) {
-	if(motor->incrementAngularVelocity() > 4) {
+	if(motor->incrementAngularVelocity() > 2047) {
 		esp_timer_stop(motor->secondHandTimer);
 		motor->secondHandTimer = nullptr;
 	}
