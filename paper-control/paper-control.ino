@@ -6,7 +6,7 @@ Motor * motor;
 
 // Controlling motor acceleration
 void IRAM_ATTR interruptMotorSecondHand(void* arg) {
-	if(motor->getStatus() == Motor::RUNNING && motor->incrementAngularVelocity() > 800) {
+	if(motor->getStatus() == Motor::RUNNING && motor->incrementAngularVelocity() > 1200) {
 		esp_timer_stop(motor->secondHandTimer);
 		motor->secondHandTimer = nullptr;
 	}
