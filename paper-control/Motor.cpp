@@ -122,15 +122,16 @@ void Motor::run(void* data) {
 	Adafruit_PCF8574 remoteControl; // laser for papers and button inputs
 
 	if(!remoteControl.begin(0x24, &Wire)) {
-		Serial.println("Couldn't find PCF8574 in 0x22");
+		Serial.println("Couldn't find PCF8574 in 0x24");
 
 		//Show warnings
 	}
 	else {
 		// Setting
-		remoteControl.pinMode(PIN_PAPER_UP, INPUT); // paper up
-		remoteControl.pinMode(PIN_PAPER_DOWN, INPUT); // paper down
-		remoteControl.pinMode(PIN_SPIN, INPUT); // spin
+		remoteControl.pinMode(PIN_SPIN, INPUT_PULLUP); // spin
+		remoteControl.pinMode(PIN_PAPER_DOWN, INPUT_PULLUP); // spin
+		remoteControl.pinMode(PIN_PAPER_UP, INPUT_PULLUP); // spin
+
 		remoteControl.pinMode(PIN_MOTOR, OUTPUT); // enable or disable this motor
 		remoteControl.pinMode(PIN_ELECTROVALVE, OUTPUT); // electrovalves for pistons
 
@@ -156,11 +157,19 @@ void Motor::run(void* data) {
 		if((this->status == Motor::PAUSED || this->status == Motor::HALTED) && (previousMotorStatus != Motor::PAUSED || previousMotorStatus != Motor::HALTED)) {
 			previousMotorStatus == this->status;
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			motorControl.setPin(7, 0);
 		}
 
 		currentMotorSpinRead = remoteControl.digitalRead(PIN_SPIN);
+		Serial.print("\tSpin:\t");
+		Serial.print(currentMotorSpinRead);
+		Serial.print("\tPaper_UP:\t");
+		Serial.print(remoteControl.digitalRead(PIN_PAPER_UP));
+		Serial.print("\tPaper_DOWN:\t");
+		Serial.println(remoteControl.digitalRead(PIN_PAPER_DOWN));
 
 		if(!currentMotorSpinRead && previousMotorSpinRead == true) {
+			Serial.print("step");
 			this->incrementCurrentSpinsQuantity();
 			previousMotorSpinRead = currentMotorSpinRead;
 		}
@@ -231,7 +240,7 @@ void Motor::run(void* data) {
 			}
 		}
 
-		continue; // temporal
+		//~ continue; // temporal
 
 		// Only repaint when motor is working
 		if(this->status != Motor::RUNNING && this->status != Motor::RUNNING_WITH_BREAK) {
