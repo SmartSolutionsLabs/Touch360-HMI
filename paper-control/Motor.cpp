@@ -141,7 +141,7 @@ void Motor::run(void* data) {
 
 	unsigned int angularVelocity = 0; // For comparing and change it if is needed
 
-	bool previousMotorSpinRead = remoteControl.digitalRead(PIN_SPIN);
+	bool previousMotorSpinRead = 0; //remoteControl.digitalRead(PIN_SPIN);
 	bool currentMotorSpinRead = previousMotorSpinRead;
 
 	Status previousMotorStatus = Motor::OFF;
@@ -161,21 +161,19 @@ void Motor::run(void* data) {
 		}
 
 		currentMotorSpinRead = remoteControl.digitalRead(PIN_SPIN);
-		Serial.print("\tSpin:\t");
-		Serial.print(currentMotorSpinRead);
-		Serial.print("\tPaper_UP:\t");
-		Serial.print(remoteControl.digitalRead(PIN_PAPER_UP));
-		Serial.print("\tPaper_DOWN:\t");
-		Serial.println(remoteControl.digitalRead(PIN_PAPER_DOWN));
 
-		if(!currentMotorSpinRead && previousMotorSpinRead == true) {
-			Serial.print("step");
-			this->incrementCurrentSpinsQuantity();
+		if(currentMotorSpinRead != previousMotorSpinRead) {
 			previousMotorSpinRead = currentMotorSpinRead;
+			if(currentMotorSpinRead){
+				Serial.print("step\t");
+				this->incrementCurrentSpinsQuantity();
+				Serial.println(this->currentSpinsQuantity);
+			}
 		}
 
 		if(angularVelocity != 0 && this->status == Motor::HALTED) {
 			angularVelocity = 0;
+			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			motorControl.setPin(7, 0);
 			Serial.print("Halt&setPWM 0");
 		}
@@ -188,8 +186,6 @@ void Motor::run(void* data) {
 			Serial.print("angVel:");
 			Serial.println(this->angularVelocity);
 		}
-
-		//~ continue; // temporal
 
 		// Test up paper and change it
 		if(!remoteControl.digitalRead(PIN_PAPER_UP)) {
@@ -228,6 +224,7 @@ void Motor::run(void* data) {
 		}
 
 		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK)) {
+			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			this->halt();
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStart\",\"enable\":false}>ET"));
@@ -240,18 +237,17 @@ void Motor::run(void* data) {
 			}
 		}
 
-		//~ continue; // temporal
-
 		// Only repaint when motor is working
 		if(this->status != Motor::RUNNING && this->status != Motor::RUNNING_WITH_BREAK) {
 			continue;
 		}
 
-		if((this->currentSpinsQuantity > (this->maxSpinsQuantity - 30)) && this->status != Motor::RUNNING_WITH_BREAK) {
+		if((this->currentSpinsQuantity > (this->maxSpinsQuantity - 30)) && this->status == Motor::RUNNING) {
 			this->status = Motor::RUNNING_WITH_BREAK;
 		}
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {
+			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			this->halt();
 			this->status = Motor::FINISHED; // Stopped gracefully
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
@@ -268,10 +264,10 @@ void Motor::run(void* data) {
 		}
 
 		//~ if(xTaskGetTickCount() - xMilestone > xDelayForPrinting) {
-			//~ xMilestone = xTaskGetTickCount();
-			//~ this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
-			//~ this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
-			//~ this->control->setDisplaySending();
+			xMilestone = xTaskGetTickCount();
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
+			this->control->setDisplaySending();
 		//~ }
 	}
 }
