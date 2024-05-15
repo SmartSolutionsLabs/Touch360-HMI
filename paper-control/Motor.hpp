@@ -11,6 +11,8 @@
 #define PIN_MOTOR 0
 #define PIN_ELECTROVALVE 2
 
+#define MAX_MOTOR_VELOCITY 1200
+
 void IRAM_ATTR interruptMotorSecondHand(void* arg);
 
 /**
