@@ -9,14 +9,14 @@
 class Thread {
 	protected:
 		TaskHandle_t taskHandler = nullptr;
-		const int taskCore = 0;
+		int taskCore;
 		const int taskPriority = 1;
 		const char * name;
 
 		Control * control;
 
 	public:
-		Thread(const char * name);
+		Thread(const char * name, int taskCore = 0);
 
 		static void runTask(void* data);
 

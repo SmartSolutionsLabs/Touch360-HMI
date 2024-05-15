@@ -1,6 +1,6 @@
 #include "Thread.hpp"
 
-Thread::Thread(const char * name) : name(name) {
+Thread::Thread(const char * name, int taskCore) : name(name), taskCore(taskCore) {
 	this->control = Control::getInstance();
 }
 
