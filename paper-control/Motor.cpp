@@ -136,6 +136,7 @@ void Motor::run(void* data) {
 		remoteControl.pinMode(PIN_SPIN, INPUT_PULLUP); // spin
 		remoteControl.pinMode(PIN_PAPER_DOWN, INPUT_PULLUP); // spin
 		remoteControl.pinMode(PIN_PAPER_UP, INPUT_PULLUP); // spin
+		remoteControl.pinMode(PIN_TEST , INPUT_PULLUP);
 
 		remoteControl.pinMode(PIN_MOTOR, OUTPUT); // enable or disable this motor
 		remoteControl.pinMode(PIN_ELECTROVALVE, OUTPUT); // electrovalves for pistons
@@ -157,6 +158,20 @@ void Motor::run(void* data) {
 		// EMERGENCY TO AVOID GO OUT OF RANGE !
 		if(this->angularVelocity > MAX_MOTOR_VELOCITY) {
 			this->angularVelocity = MAX_MOTOR_VELOCITY;
+		}
+
+		if(!remoteControl.digitalRead(PIN_TEST) && this->status != Motor::TEST){
+			this->status = Motor::TEST;
+			this->angularVelocity = 100;
+			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
+			motorControl.setPin(7, angularVelocity);
+		}
+
+		if(remoteControl.digitalRead(PIN_TEST) && this->status == Motor::TEST){
+			this->status = Motor::OFF;
+			this->angularVelocity = 0;
+			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			motorControl.setPin(7, angularVelocity);
 		}
 
 		if(previousMotorStatus != Motor::RUNNING && this->status == Motor::RUNNING) {
