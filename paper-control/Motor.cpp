@@ -48,6 +48,10 @@ void Motor::incrementCurrentSpinsQuantity() {
 }
 
 unsigned int Motor::incrementAngularVelocity() {
+	if(this->angularVelocity > MAX_MOTOR_VELOCITY) {
+		return this->angularVelocity;
+	}
+
 	return ++this->angularVelocity;
 }
 
@@ -149,6 +153,11 @@ void Motor::run(void* data) {
 	while(1) {
 		vTaskDelay(xDelay);
 
+		// EMERGENCY TO AVOID GO OUT OF RANGE !
+		if(this->angularVelocity > MAX_MOTOR_VELOCITY) {
+			this->angularVelocity = MAX_MOTOR_VELOCITY;
+		}
+
 		if(previousMotorStatus != Motor::RUNNING && this->status == Motor::RUNNING) {
 			previousMotorStatus == this->status;
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
@@ -173,7 +182,7 @@ void Motor::run(void* data) {
 
 		if(angularVelocity != 0 && this->status == Motor::HALTED) {
 			angularVelocity = 0;
-			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+
 			motorControl.setPin(7, 0);
 			Serial.print("Halt&setPWM 0");
 		}
