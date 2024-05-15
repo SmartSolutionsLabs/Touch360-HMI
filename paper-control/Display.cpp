@@ -81,7 +81,7 @@ void Display::parseIncome(void * data) {
 
 				Motor::getInstance()->toggleStatus();
 
-				if(Motor::getInstance()->getStatus() == Motor::RUNNING) {
+				if(Motor::getInstance()->getStatus() == Motor::RUNNING || Motor::getInstance()->getStatus() == Motor::RUNNING_WITH_BREAK) {
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Pausar\"}>ET"));
 					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":false}>ET"));
 				}

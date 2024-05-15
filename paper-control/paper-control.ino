@@ -4,14 +4,13 @@
 
 Motor * motor;
 
-// When laser detects paper cut
-void IRAM_ATTR interruptCutterHandler() {
-	motor->incrementCurrentSpinsQuantity();
-}
-
 // Controlling motor acceleration
 void IRAM_ATTR interruptMotorSecondHand(void* arg) {
-	if(motor->incrementAngularVelocity() > 2047) {
+	if(motor->getStatus() == Motor::RUNNING && motor->incrementAngularVelocity() > 800) {
+		esp_timer_stop(motor->secondHandTimer);
+		motor->secondHandTimer = nullptr;
+	}
+	if(motor->getStatus() == Motor::RUNNING_WITH_BREAK && motor->decrementAngularVelocity() == 0) {
 		esp_timer_stop(motor->secondHandTimer);
 		motor->secondHandTimer = nullptr;
 	}
@@ -26,13 +25,11 @@ void setup() {
 
 	motor = Motor::getInstance();
 
-	attachInterrupt(digitalPinToInterrupt(35), interruptCutterHandler, FALLING);
-
 	Display * display = new Display("hmi");
 	display->start();
 }
 
-TickType_t xDelay = 120 / portTICK_PERIOD_MS;
+TickType_t xDelay = 1 / portTICK_PERIOD_MS;
 
 void loop() {
 	vTaskDelay(xDelay);

@@ -4,6 +4,13 @@
 #include "Thread.hpp"
 #include "Commodity.hpp"
 
+#define PIN_PAPER_UP 4
+#define PIN_PAPER_DOWN 5
+#define PIN_SPIN 7
+
+#define PIN_MOTOR 0
+#define PIN_ELECTROVALVE 2
+
 void IRAM_ATTR interruptMotorSecondHand(void* arg);
 
 /**
@@ -14,6 +21,7 @@ class Motor : public Thread {
 		enum Status {
 			OFF,
 			RUNNING,
+			RUNNING_WITH_BREAK,
 			PAUSED,
 			HALTED,
 			FINISHED
@@ -59,6 +67,7 @@ class Motor : public Thread {
 		void incrementCurrentSpinsQuantity();
 
 		unsigned int incrementAngularVelocity();
+		unsigned int decrementAngularVelocity();
 
 		/**
 		 * Halt the motor as an emergency.

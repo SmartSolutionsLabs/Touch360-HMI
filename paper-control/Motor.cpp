@@ -13,7 +13,7 @@ Motor * Motor::getInstance() {
 	return motor;
 }
 
-Motor::Motor() : Thread("mtr") {
+Motor::Motor() : Thread("mtr", 1) {
 }
 
 Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING) {
@@ -51,6 +51,10 @@ unsigned int Motor::incrementAngularVelocity() {
 	return ++this->angularVelocity;
 }
 
+unsigned int Motor::decrementAngularVelocity() {
+	return --this->angularVelocity;
+}
+
 void Motor::halt() {
 	this->status = Motor::HALTED;
 
@@ -63,7 +67,7 @@ void Motor::halt() {
 }
 
 void Motor::toggleStatus() {
-	if(this->status == Motor::RUNNING) {
+	if(this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK) {
 		this->status = Motor::PAUSED;
 		return;
 	}
@@ -79,7 +83,7 @@ void Motor::toggleStatus() {
 			.name = "periodic_timer"
 	};
 	esp_timer_create(&periodic_timer_args, &this->secondHandTimer);
-	esp_timer_start_periodic(this->secondHandTimer, 1000000 / 10); // Each 1/10 second
+	esp_timer_start_periodic(this->secondHandTimer, 1000000 / 40); // Each 1/10 second
 }
 
 Motor::Status Motor::getStatus() const {
@@ -95,7 +99,10 @@ Commodity Motor::getPaperDownStatus() const {
 }
 
 void Motor::run(void* data) {
-	TickType_t xDelay = 200 / portTICK_PERIOD_MS;
+	TickType_t xDelay = 1 / portTICK_PERIOD_MS; // Normal speed
+
+	TickType_t xDelayForPrinting = 200 / portTICK_PERIOD_MS; // Printing speed
+	TickType_t xMilestone = xTaskGetTickCount();
 
 	Wire.begin(4, 16);
 
@@ -114,21 +121,37 @@ void Motor::run(void* data) {
 
 	Adafruit_PCF8574 remoteControl; // laser for papers and button inputs
 
-	if(!remoteControl.begin(0x22, &Wire)) {
+	if(!remoteControl.begin(0x24, &Wire)) {
 		Serial.println("Couldn't find PCF8574 in 0x22");
 
 		//Show warnings
 	}
 	else {
 		// Setting
-		remoteControl.pinMode(0, INPUT_PULLUP); // paper up
-		remoteControl.pinMode(1, INPUT_PULLUP); // paper down
+		remoteControl.pinMode(PIN_PAPER_UP, INPUT); // paper up
+		remoteControl.pinMode(PIN_PAPER_DOWN, INPUT); // paper down
+		remoteControl.pinMode(PIN_SPIN, INPUT); // spin
+		remoteControl.pinMode(PIN_MOTOR, OUTPUT); // enable or disable this motor
+		remoteControl.pinMode(PIN_ELECTROVALVE, OUTPUT); // electrovalves for pistons
+
+		remoteControl.digitalWrite(PIN_MOTOR, LOW);
+		remoteControl.digitalWrite(PIN_ELECTROVALVE, LOW);
 	}
 
 	unsigned int angularVelocity = 0; // For comparing and change it if is needed
 
+	bool previousMotorSpinRead = remoteControl.digitalRead(PIN_SPIN);
+	bool currentMotorSpinRead = previousMotorSpinRead;
+
 	while(1) {
 		vTaskDelay(xDelay);
+
+		currentMotorSpinRead = remoteControl.digitalRead(PIN_SPIN);
+
+		if(!currentMotorSpinRead && previousMotorSpinRead == true) {
+			this->incrementCurrentSpinsQuantity();
+			previousMotorSpinRead = currentMotorSpinRead;
+		}
 
 		if(angularVelocity != 0 && this->status == Motor::HALTED) {
 			angularVelocity = 0;
@@ -136,8 +159,17 @@ void Motor::run(void* data) {
 			Serial.print("Halt&setPWM 0");
 		}
 
+		// Translate the local velocity to this motor
+		if(this->angularVelocity != angularVelocity) {
+			//~ motorControl.setPWM(7, 0, this->angularVelocity);
+			motorControl.setPin(7, this->angularVelocity);
+			angularVelocity = this->angularVelocity;
+			Serial.print("angVel:");
+			Serial.println(this->angularVelocity);
+		}
+
 		// Test up paper and change it
-		if(!remoteControl.digitalRead(0)) {
+		if(!remoteControl.digitalRead(PIN_PAPER_UP)) {
 			if(this->paperUpStatus != Commodity::PRESENT) {
 				this->paperUpStatus = Commodity::PRESENT;
 				Serial.print("Paper up present\n");
@@ -153,7 +185,7 @@ void Motor::run(void* data) {
 		}
 
 		// Test down paper and change it
-		if(!remoteControl.digitalRead(1)) {
+		if(!remoteControl.digitalRead(PIN_PAPER_DOWN)) {
 			if(this->paperDownStatus != Commodity::PRESENT) {
 				this->paperDownStatus = Commodity::PRESENT;
 				Serial.print("Paper down present\n");
@@ -180,17 +212,12 @@ void Motor::run(void* data) {
 		this->control->setDisplaySending();
 
 		// Only repaint when motor is working
-		if(this->status != Motor::RUNNING) {
+		if(this->status != Motor::RUNNING && this->status != Motor::RUNNING_WITH_BREAK) {
 			continue;
 		}
 
-		// Translate the local velocity to this motor
-		if(this->angularVelocity != angularVelocity) {
-			//~ motorControl.setPWM(7, 0, this->angularVelocity);
-			motorControl.setPin(7, this->angularVelocity);
-			angularVelocity = this->angularVelocity;
-			Serial.print("angVel:");
-			Serial.println(this->angularVelocity);
+		if((this->currentSpinsQuantity > (this->maxSpinsQuantity - 30)) && this->status != Motor::RUNNING_WITH_BREAK) {
+			this->status = Motor::RUNNING_WITH_BREAK;
 		}
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {
@@ -209,9 +236,12 @@ void Motor::run(void* data) {
 			continue;
 		}
 
-		this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
-		this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
-		this->control->setDisplaySending();
+		//~ if(xTaskGetTickCount() - xMilestone > xDelayForPrinting) {
+			//~ xMilestone = xTaskGetTickCount();
+			//~ this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
+			//~ this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
+			//~ this->control->setDisplaySending();
+		//~ }
 	}
 }
 
