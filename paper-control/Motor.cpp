@@ -29,7 +29,7 @@ void Motor::resetCurrentSpinsQuantity() {
 	this->currentSpinsQuantity = 0;
 }
 
-unsigned int Motor::getAngularVelocity() const {
+int Motor::getAngularVelocity() const {
 	return this->angularVelocity;
 }
 
@@ -47,7 +47,7 @@ void Motor::incrementCurrentSpinsQuantity() {
 	}
 }
 
-unsigned int Motor::incrementAngularVelocity() {
+int Motor::incrementAngularVelocity() {
 	if(this->angularVelocity > MAX_MOTOR_VELOCITY) {
 		return this->angularVelocity;
 	}
@@ -55,9 +55,10 @@ unsigned int Motor::incrementAngularVelocity() {
 	return ++this->angularVelocity;
 }
 
-unsigned int Motor::decrementAngularVelocity() {
+int Motor::decrementAngularVelocity() {
 	return --this->angularVelocity;
 }
+
 
 void Motor::halt() {
 	this->status = Motor::HALTED;
@@ -87,7 +88,7 @@ void Motor::toggleStatus() {
 			.name = "periodic_timer"
 	};
 	esp_timer_create(&periodic_timer_args, &this->secondHandTimer);
-	esp_timer_start_periodic(this->secondHandTimer, 1000000 / 80); // Each 1/10 second
+	esp_timer_start_periodic(this->secondHandTimer, 1000000 / 100); // Each fraction of second
 }
 
 Motor::Status Motor::getStatus() const {
@@ -143,7 +144,7 @@ void Motor::run(void* data) {
 		remoteControl.digitalWrite(PIN_ELECTROVALVE, LOW);
 	}
 
-	unsigned int angularVelocity = 0; // For comparing and change it if is needed
+	int angularVelocity = 0; // For comparing and change it if is needed
 
 	bool previousMotorSpinRead = 0; //remoteControl.digitalRead(PIN_SPIN);
 	bool currentMotorSpinRead = previousMotorSpinRead;
@@ -189,7 +190,6 @@ void Motor::run(void* data) {
 
 		// Translate the local velocity to this motor
 		if(this->angularVelocity != angularVelocity) {
-			//~ motorControl.setPWM(7, 0, this->angularVelocity);
 			motorControl.setPin(7, this->angularVelocity);
 			angularVelocity = this->angularVelocity;
 			Serial.print("angVel:");

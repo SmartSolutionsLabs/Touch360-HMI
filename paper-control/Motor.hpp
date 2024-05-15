@@ -37,10 +37,9 @@ class Motor : public Thread {
 		Commodity paperUpStatus;
 		Commodity paperDownStatus;
 
-		unsigned int angularVelocity;
+		int angularVelocity;
 		unsigned int maxSpinsQuantity;
 		volatile unsigned int currentSpinsQuantity;
-
 		Status status;
 
 	public:
@@ -62,14 +61,14 @@ class Motor : public Thread {
 
 		void resetCurrentSpinsQuantity();
 
-		unsigned int getAngularVelocity() const;
+		int getAngularVelocity() const;
 		unsigned int getMaxSpinsQuantity() const;
 		unsigned int getCurrentSpinsQuantity() const;
 
 		void incrementCurrentSpinsQuantity();
 
-		unsigned int incrementAngularVelocity();
-		unsigned int decrementAngularVelocity();
+		int incrementAngularVelocity();
+		int decrementAngularVelocity();
 
 		/**
 		 * Halt the motor as an emergency.
