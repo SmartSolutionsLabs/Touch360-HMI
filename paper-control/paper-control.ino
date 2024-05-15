@@ -1,6 +1,7 @@
 #include "Display.hpp"
 #include "Control.hpp"
 #include "Motor.hpp"
+#include "Watcher.hpp"
 
 Motor * motor;
 
@@ -26,6 +27,9 @@ void setup() {
 
 	Display * display = new Display("hmi");
 	display->start();
+
+	Watcher * watcher = new Watcher("wtc");
+	watcher->start();
 }
 
 TickType_t xDelay = 1 / portTICK_PERIOD_MS;

@@ -267,17 +267,6 @@ void Motor::run(void* data) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
 			this->control->setDisplaySending();
 		}
-
-		if(this->control->view != Control::HOME) {
-			continue;
-		}
-
-		//~ if(xTaskGetTickCount() - xMilestone > xDelayForPrinting) {
-			xMilestone = xTaskGetTickCount();
-			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
-			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * this->getCurrentSpinsQuantity()) / this->getMaxSpinsQuantity() * 100) ) + "}>ET"));
-			this->control->setDisplaySending();
-		//~ }
 	}
 }
 
