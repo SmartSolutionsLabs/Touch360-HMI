@@ -6,7 +6,7 @@
 
 #define PIN_PAPER_UP 4
 #define PIN_PAPER_DOWN 5
-#define PIN_SPIN 7
+#define PIN_SPIN 6
 
 #define PIN_MOTOR 0
 #define PIN_ELECTROVALVE 2
