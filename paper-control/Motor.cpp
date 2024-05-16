@@ -238,16 +238,12 @@ void Motor::run(void* data) {
 			if(this->paperUpStatus != Commodity::PRESENT) {
 				this->paperUpStatus = Commodity::PRESENT;
 				Serial.print("Paper up present\n");
-				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperUpX\",\"visible\":false}>ET"));
-				this->control->setDisplaySending();
 			}
 		}
 		else {
 			if(this->paperUpStatus != Commodity::CUT) {
 				this->paperUpStatus = Commodity::CUT;
 				Serial.print("Paper up cut\n");
-				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperUpX\",\"visible\":true}>ET"));
-				this->control->setDisplaySending();
 			}
 		}
 
@@ -256,31 +252,18 @@ void Motor::run(void* data) {
 			if(this->paperDownStatus != Commodity::PRESENT) {
 				this->paperDownStatus = Commodity::PRESENT;
 				Serial.print("Paper down present\n");
-				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperDownX\",\"visible\":false}>ET"));
-				this->control->setDisplaySending();
 			}
 		}
 		else {
 			if(this->paperDownStatus != Commodity::CUT) {
 				this->paperDownStatus = Commodity::CUT;
 				Serial.print("Paper down cut\n");
-				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperDownX\",\"visible\":true}>ET"));
-				this->control->setDisplaySending();
 			}
 		}
 
 		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK)) {
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			this->halt();
-			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
-			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStart\",\"enable\":false}>ET"));
-			this->control->setDisplaySending();
-		}
-		else {
-			if(this->paperDownStatus == Commodity::CUT && this->paperUpStatus == Commodity::CUT) {
-				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_enable\",\"type\":\"widget\",\"widget\":\"btnStart\",\"enable\":true}>ET"));
-				this->control->setDisplaySending();
-			}
 		}
 
 		// Only repaint when motor is working
