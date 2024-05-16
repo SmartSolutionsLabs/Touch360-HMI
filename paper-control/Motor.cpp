@@ -82,9 +82,8 @@ int Motor::getMaxAngularVelocity() const {
 	return this->maxAngularVelocity;
 }
 
-void Motor::halt() {
-	this->status = Motor::HALTED;
-
+void Motor::stop() {
+	this->status = Motor::FINISHED;
 	this->angularVelocity = 0;
 
 	if(this->secondHandTimer != nullptr) {
@@ -93,11 +92,33 @@ void Motor::halt() {
 	}
 }
 
+void Motor::halt() {
+	this->status = Motor::HALTED;
+
+	this->angularVelocity = 0;
+	this->currentSpinsQuantity = 0;
+
+	if(this->secondHandTimer != nullptr) {
+		esp_timer_stop(this->secondHandTimer);
+		this->secondHandTimer = nullptr;
+	}
+}
+
 void Motor::toggleStatus() {
+	if(this->status == Motor::HALTED) {
+		this->currentSpinsQuantity = 0; // Always resseting when was emergency stop
+	}
+
 	if(this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK) {
 		this->status = Motor::PAUSED;
 		this->angularVelocity = 0; // by the way
 		return;
+	}
+
+	// Check commodities
+	if(this->paperUpStatus != Commodity::PRESENT || this->paperDownStatus != Commodity::PRESENT) {
+		Serial.print("Missing commodities\n");
+		return; // Do nothing
 	}
 
 	this->status = Motor::RUNNING;
@@ -269,6 +290,7 @@ void Motor::run(void* data) {
 		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK)) {
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			this->halt();
+			this->currentSpinsQuantity = 0; // Resetting because error
 		}
 
 		// Only repaint when motor is working
@@ -284,8 +306,7 @@ void Motor::run(void* data) {
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
-			this->halt();
-			this->status = Motor::FINISHED; // Stopped gracefully
+			this->stop(); // Stopped gracefully
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_color\",\"type\":\"widget\",\"widget\":\"barProgress\",\"color_object\":\"fg_color\",\"color\":4278255104}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":100}>ET"));

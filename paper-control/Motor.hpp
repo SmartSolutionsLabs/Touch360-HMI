@@ -81,6 +81,11 @@ class Motor : public Thread {
 		void halt();
 
 		/**
+		 * Finished.
+		 */
+		void stop();
+
+		/**
 		 * Alternating running - paused.
 		 */
 		void toggleStatus();
