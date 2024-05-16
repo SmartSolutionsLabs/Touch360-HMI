@@ -17,6 +17,8 @@ Motor::Motor() : Thread("mtr", 1) {
 }
 
 Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING) {
+	this->maxAngularVelocity = this->control->getMaxVelocity();
+
 	// This motor will run forever
 	this->start();
 }
@@ -48,7 +50,8 @@ void Motor::incrementCurrentSpinsQuantity() {
 }
 
 int Motor::incrementAngularVelocity() {
-	if(this->angularVelocity > MAX_MOTOR_VELOCITY) {
+	if(this->angularVelocity > this->maxAngularVelocity) {
+		this->angularVelocity = this->maxAngularVelocity;
 		return this->angularVelocity;
 	}
 
@@ -56,9 +59,28 @@ int Motor::incrementAngularVelocity() {
 }
 
 int Motor::decrementAngularVelocity() {
-	return --this->angularVelocity;
+	if(this->angularVelocity < 0) {
+		this->angularVelocity = 0;
+	}
+	else {
+		this->angularVelocity--;
+	}
+
+	return this->angularVelocity;
 }
 
+void Motor::setMaxAngularVelocity(int maxAngularVelocity) {
+	if(angularVelocity > MAX_MOTOR_VELOCITY) {
+		this->angularVelocity = MAX_MOTOR_VELOCITY;
+		return;
+	}
+
+	this->maxAngularVelocity = maxAngularVelocity;
+}
+
+int Motor::getMaxAngularVelocity() const {
+	return this->maxAngularVelocity;
+}
 
 void Motor::halt() {
 	this->status = Motor::HALTED;

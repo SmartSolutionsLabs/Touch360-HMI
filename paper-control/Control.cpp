@@ -19,6 +19,8 @@ Control::Control() : displayStatus(RECEIVING), messagesQueue(25), view(HOME) {
 		this->rolls[rollIndex].maxSpinsQuantity = this->rolls[rollIndex].preferences.getUInt("spins", 0);
 		this->rolls[rollIndex].name = this->rolls[rollIndex].preferences.getString("name", strRoll);
 	}
+
+	this->preferences.begin("global", false);
 }
 
 void Control::setDisplaySending() {
@@ -78,4 +80,12 @@ void Control::setRollName(unsigned int typeIndex, const char * name) {
 
 String Control::getRollName(unsigned int typeIndex) const {
 	return this->rolls[typeIndex].name;
+}
+
+void Control::saveMaxVelocity(int maxVelocity) {
+	this->preferences.putInt("maxVelocity", maxVelocity);
+}
+
+int Control::getMaxVelocity() {
+	return this->preferences.getInt("maxVelocity", 0);
 }

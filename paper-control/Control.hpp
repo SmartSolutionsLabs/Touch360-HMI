@@ -19,6 +19,8 @@ class Control {
 
 		Roll rolls[3];
 
+		Preferences preferences;
+
 	public:
 		enum DisplayStatus {
 			SENDING,
@@ -61,6 +63,10 @@ class Control {
 		void setRollName(unsigned int typeIndex, const char * name);
 
 		String getRollName(unsigned int typeIndex) const;
+
+		void saveMaxVelocity(int maxVelocity);
+
+		int getMaxVelocity();
 
 	private:
 		DisplayStatus displayStatus;

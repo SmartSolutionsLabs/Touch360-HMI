@@ -153,6 +153,13 @@ void Display::parseIncome(void * data) {
 			}
 		}
 
+		case 4161: // Slider
+			if(widgetName.startsWith("slider1")) {
+				this->control->saveMaxVelocity(STONER.float_value); // onto EEPROM
+				Motor::getInstance()->setMaxAngularVelocity(STONER.float_value); // on RAM
+				return;
+			}
+
 		case 4208: // Edit
 			if(widgetName.startsWith("edtPaper1")) {
 				this->control->setRollName(0, STONER.text);
@@ -233,6 +240,8 @@ void Display::parseIncome(void * data) {
 
 			if(STONER.len == 10) { //configuration page
 				this->control->view = Control::CONFIGURATION;
+
+				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"slider\",\"widget\":\"slider1\",\"value\":" + String(Motor::getInstance()->getMaxAngularVelocity()) + "}>ET"));
 
 				unsigned int spinsQuantity = 0;
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"edit\",\"widget\":\"edtPaper1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));

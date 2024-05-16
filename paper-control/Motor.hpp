@@ -39,6 +39,7 @@ class Motor : public Thread {
 		Commodity paperUpStatus;
 		Commodity paperDownStatus;
 
+		int maxAngularVelocity;
 		int angularVelocity;
 		unsigned int maxSpinsQuantity;
 		volatile unsigned int currentSpinsQuantity;
@@ -71,6 +72,8 @@ class Motor : public Thread {
 
 		int incrementAngularVelocity();
 		int decrementAngularVelocity();
+		void setMaxAngularVelocity(int maxAngularVelocity);
+		int getMaxAngularVelocity() const;
 
 		/**
 		 * Halt the motor as an emergency.
