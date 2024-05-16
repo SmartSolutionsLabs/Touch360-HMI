@@ -180,11 +180,12 @@ void Motor::run(void* data) {
 		// EMERGENCY TO AVOID GO OUT OF RANGE !
 		if(this->angularVelocity > MAX_MOTOR_VELOCITY) {
 			this->angularVelocity = MAX_MOTOR_VELOCITY;
+			angularVelocity = MAX_MOTOR_VELOCITY;
 		}
 
 		if(!remoteControl.digitalRead(PIN_TEST) && this->status != Motor::TEST){
 			this->status = Motor::TEST;
-			this->angularVelocity = 100;
+			angularVelocity = 100;
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			motorControl.setPin(7, angularVelocity);
 		}
