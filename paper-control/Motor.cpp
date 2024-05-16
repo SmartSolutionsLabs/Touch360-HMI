@@ -276,8 +276,8 @@ void Motor::run(void* data) {
 			continue;
 		}
 
-		int delta = this->maxSpinsQuantity * 30 / 100;
-		if(delta > 30) delta = 30;
+		int delta = this->maxSpinsQuantity * (this->maxAngularVelocity/55) / 100;
+		if(delta > (this->maxAngularVelocity/55)) delta = (this->maxAngularVelocity/55);
 		if((this->currentSpinsQuantity > (this->maxSpinsQuantity - delta )) && this->status == Motor::RUNNING) {
 			this->status = Motor::RUNNING_WITH_BREAK;
 		}

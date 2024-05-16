@@ -175,7 +175,7 @@ void Display::parseIncome(void * data) {
 			}
 
 
-		case 4225: // Spins
+		case 4225: // Spins 
 			if(widgetName.startsWith("spinner14")) {
 				this->control->setRollQuantity(0, 3, STONER.long_value);
 				return;
