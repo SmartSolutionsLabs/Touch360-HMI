@@ -186,7 +186,7 @@ void Motor::run(void* data) {
 
 		if(!remoteControl.digitalRead(PIN_TEST) && this->status != Motor::TEST){
 			this->status = Motor::TEST;
-			angularVelocity = 100;
+			this->angularVelocity = 100;
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			motorControl.setPin(7, angularVelocity);
 		}
