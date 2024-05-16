@@ -198,14 +198,17 @@ void Motor::run(void* data) {
 			motorControl.setPin(7, angularVelocity);
 		}
 
+		// Starting motor when was in another status
 		if(previousMotorStatus != Motor::RUNNING && this->status == Motor::RUNNING) {
 			previousMotorStatus == this->status;
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			remoteControl.digitalWrite(PIN_ELECTROVALVE, LOW);
 		}
 
 		if((this->status == Motor::PAUSED || this->status == Motor::HALTED) && (previousMotorStatus != Motor::PAUSED || previousMotorStatus != Motor::HALTED)) {
 			previousMotorStatus == this->status;
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
+			remoteControl.digitalWrite(PIN_ELECTROVALVE, HIGH);
 			motorControl.setPin(7, 0);
 		}
 
