@@ -96,6 +96,7 @@ void Motor::halt() {
 void Motor::toggleStatus() {
 	if(this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK) {
 		this->status = Motor::PAUSED;
+		this->angularVelocity = 0; // by the way
 		return;
 	}
 
