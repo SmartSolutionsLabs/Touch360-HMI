@@ -164,7 +164,7 @@ void Motor::run(void* data) {
 		remoteControl.pinMode(PIN_MOTOR, OUTPUT); // enable or disable this motor
 		remoteControl.pinMode(PIN_ELECTROVALVE, OUTPUT); // electrovalves for pistons
 
-		remoteControl.digitalWrite(PIN_MOTOR, LOW);
+		remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 		remoteControl.digitalWrite(PIN_ELECTROVALVE, LOW);
 	}
 
@@ -187,25 +187,25 @@ void Motor::run(void* data) {
 		if(!remoteControl.digitalRead(PIN_TEST) && this->status != Motor::TEST){
 			this->status = Motor::TEST;
 			angularVelocity = 100;
-			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
+			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			motorControl.setPin(7, angularVelocity);
 		}
 
 		if(remoteControl.digitalRead(PIN_TEST) && this->status == Motor::TEST){
 			this->status = Motor::OFF;
 			this->angularVelocity = 0;
-			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			motorControl.setPin(7, angularVelocity);
 		}
 
 		if(previousMotorStatus != Motor::RUNNING && this->status == Motor::RUNNING) {
 			previousMotorStatus == this->status;
-			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
+			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 		}
 
 		if((this->status == Motor::PAUSED || this->status == Motor::HALTED) && (previousMotorStatus != Motor::PAUSED || previousMotorStatus != Motor::HALTED)) {
 			previousMotorStatus == this->status;
-			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			motorControl.setPin(7, 0);
 		}
 
@@ -264,7 +264,7 @@ void Motor::run(void* data) {
 		}
 
 		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK)) {
-			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			this->halt();
 		}
 
@@ -280,7 +280,7 @@ void Motor::run(void* data) {
 		}
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {
-			remoteControl.digitalWrite(PIN_MOTOR, LOW);
+			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			this->halt();
 			this->status = Motor::FINISHED; // Stopped gracefully
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
