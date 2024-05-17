@@ -39,8 +39,8 @@ class Motor : public Thread {
 		Commodity paperUpStatus;
 		Commodity paperDownStatus;
 
-		int maxAngularVelocity;
-		int angularVelocity;
+		volatile int maxAngularVelocity;
+		volatile int angularVelocity;
 		unsigned int maxSpinsQuantity;
 		volatile unsigned int currentSpinsQuantity;
 		Status status;
