@@ -1,4 +1,5 @@
 #include "Control.hpp"
+#include "Network.hpp"
 
 Control * Control::control = nullptr;
 
@@ -21,6 +22,11 @@ Control::Control() : displayStatus(RECEIVING), messagesQueue(25), view(HOME) {
 	}
 
 	this->preferences.begin("global", false);
+
+	Network::SSID = this->preferences.getString("netSsid", "");
+	Network::PASSWORD = this->preferences.getString("netPassword", "");
+
+	Network::getInstance()->connect();
 }
 
 void Control::setDisplaySending() {
@@ -88,4 +94,16 @@ void Control::saveMaxVelocity(int maxVelocity) {
 
 int Control::getMaxVelocity() {
 	return this->preferences.getInt("maxVelocity", 0);
+}
+
+void Control::setNetworkPassword(String networkPassword) {
+	Network::PASSWORD = networkPassword;
+
+	this->preferences.putString("netSsid", networkPassword);
+}
+
+void Control::setNetworkSsid(String networkSsid) {
+	Network::SSID = networkSsid;
+
+	this->preferences.putString("netSsid", networkSsid);
 }

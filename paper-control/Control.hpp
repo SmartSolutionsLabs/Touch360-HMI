@@ -68,6 +68,10 @@ class Control {
 
 		int getMaxVelocity();
 
+		// Set and save credentials of network
+		void setNetworkPassword(String networkPassword);
+		void setNetworkSsid(String networkSsid);
+
 	private:
 		DisplayStatus displayStatus;
 };
