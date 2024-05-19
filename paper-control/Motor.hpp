@@ -43,7 +43,7 @@ class Motor : public Thread {
 		volatile int angularVelocity;
 		unsigned int maxSpinsQuantity;
 		volatile unsigned int currentSpinsQuantity;
-		Status status;
+		volatile Status status;
 
 	public:
 		esp_timer_handle_t secondHandTimer = nullptr;

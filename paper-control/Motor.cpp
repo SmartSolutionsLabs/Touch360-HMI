@@ -16,7 +16,7 @@ Motor * Motor::getInstance() {
 Motor::Motor() : Thread("mtr", 1) {
 }
 
-Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING) {
+Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING), status(Motor::OFF) {
 	this->maxAngularVelocity = this->control->getMaxVelocity();
 
 	// This motor will run forever

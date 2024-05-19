@@ -21,6 +21,33 @@ void Watcher::run(void* data) {
 			continue;
 		}
 
+		// Debugger on display
+		String info;
+		switch(motor->getStatus()) {
+			case Motor::OFF:
+				info = "off";
+				break;
+			case Motor::TEST:
+				info = "testing";
+				break;
+			case Motor::PAUSED:
+				info = "paused";
+				break;
+			case Motor::RUNNING:
+				info = "running";
+				break;
+			case Motor::RUNNING_WITH_BREAK:
+				info = "runnning with break";
+				break;
+			case Motor::HALTED:
+				info = "halted";
+				break;
+			case Motor::FINISHED:
+				info = "finished";
+				break;
+		}
+		this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lbDebug\",\"text\":\"Motor " + info + String(".\"}>ET")));
+
 		if(motor->getPaperUpStatus() == Commodity::CUT) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperUpX\",\"visible\":true}>ET"));
 			this->control->setDisplaySending();
