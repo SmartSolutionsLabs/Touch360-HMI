@@ -59,14 +59,11 @@ int Motor::incrementAngularVelocity() {
 }
 
 int Motor::decrementAngularVelocity() {
-	if(this->angularVelocity < 0) {
-		this->angularVelocity = 0;
-	}
-	else {
-		this->angularVelocity--;
+	if(this->angularVelocity < 1) {
+		return 0;
 	}
 
-	return this->angularVelocity;
+	return --this->angularVelocity;
 }
 
 void Motor::setMaxAngularVelocity(int maxAngularVelocity) {
