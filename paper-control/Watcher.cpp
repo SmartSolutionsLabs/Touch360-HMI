@@ -28,16 +28,16 @@ void Watcher::run(void* data) {
 				info = "off";
 				break;
 			case Motor::TEST:
-				info = "testing";
+				info = "testing. Velocity " + String(motor->getAngularVelocity());
 				break;
 			case Motor::PAUSED:
 				info = "paused";
 				break;
 			case Motor::RUNNING:
-				info = "running";
+				info = "running. Velocity " + String(motor->getAngularVelocity());
 				break;
 			case Motor::RUNNING_WITH_BREAK:
-				info = "runnning with break";
+				info = "runnning with break. Velocity " + String(motor->getAngularVelocity());
 				break;
 			case Motor::HALTED:
 				info = "halted";
@@ -47,6 +47,7 @@ void Watcher::run(void* data) {
 				break;
 		}
 		this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lbDebug\",\"text\":\"Motor " + info + String(".\"}>ET")));
+		this->control->setDisplaySending();
 
 		if(motor->getPaperUpStatus() == Commodity::CUT) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgPaperUpX\",\"visible\":true}>ET"));
