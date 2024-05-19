@@ -1,6 +1,8 @@
 #include "Control.hpp"
 #include "Network.hpp"
 
+#include "private.hpp"
+
 Control * Control::control = nullptr;
 
 Control * Control::getInstance() {
@@ -23,8 +25,8 @@ Control::Control() : displayStatus(RECEIVING), messagesQueue(25), view(HOME) {
 
 	this->preferences.begin("global", false);
 
-	Network::SSID = this->preferences.getString("netSsid", "");
-	Network::PASSWORD = this->preferences.getString("netPassword", "");
+	Network::SSID = this->preferences.getString("netSsid", PRIVATE_NETWORK_SSID);
+	Network::PASSWORD = this->preferences.getString("netPassword", PRIVATE_NETWORK_PASSWORD);
 
 	Network::getInstance()->connect();
 }
