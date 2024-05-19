@@ -89,15 +89,18 @@ void Motor::stop() {
 	}
 }
 
-void Motor::halt() {
-	this->status = Motor::HALTED;
+void Motor::halt(Status status) {
+	this->status = status;
 
 	this->angularVelocity = 0;
-	this->currentSpinsQuantity = 0;
 
-	if(this->secondHandTimer != nullptr) {
-		esp_timer_stop(this->secondHandTimer);
-		this->secondHandTimer = nullptr;
+	if(this->status == Motor::HALTED) {
+		this->currentSpinsQuantity = 0;
+
+		if(this->secondHandTimer != nullptr) {
+			esp_timer_stop(this->secondHandTimer);
+			this->secondHandTimer = nullptr;
+		}
 	}
 }
 
@@ -122,14 +125,16 @@ void Motor::toggleStatus() {
 
 	this->angularVelocity = 0;
 
-	const esp_timer_create_args_t periodic_timer_args = {
-			.callback = &interruptMotorSecondHand,
-			.arg = NULL,
-			.dispatch_method = ESP_TIMER_TASK,
-			.name = "periodic_timer"
-	};
-	esp_timer_create(&periodic_timer_args, &this->secondHandTimer);
-	esp_timer_start_periodic(this->secondHandTimer, 1000000 / 100); // Each fraction of second
+	if(this->secondHandTimer == nullptr) {
+		const esp_timer_create_args_t periodic_timer_args = {
+				.callback = &interruptMotorSecondHand,
+				.arg = NULL,
+				.dispatch_method = ESP_TIMER_TASK,
+				.name = "periodic_timer"
+		};
+		esp_timer_create(&periodic_timer_args, &this->secondHandTimer);
+		esp_timer_start_periodic(this->secondHandTimer, 1000000 / 100); // Each fraction of second
+	}
 }
 
 Motor::Status Motor::getStatus() const {
@@ -286,7 +291,7 @@ void Motor::run(void* data) {
 
 		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK)) {
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
-			this->halt();
+			this->halt(Motor::PAUSED_BY_ERROR);
 			this->currentSpinsQuantity = 0; // Resetting because error
 		}
 

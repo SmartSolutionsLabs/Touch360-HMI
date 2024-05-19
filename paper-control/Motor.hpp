@@ -27,6 +27,7 @@ class Motor : public Thread {
 			RUNNING,
 			RUNNING_WITH_BREAK,
 			PAUSED,
+			PAUSED_BY_ERROR,
 			HALTED,
 			FINISHED
 		};
@@ -78,7 +79,7 @@ class Motor : public Thread {
 		/**
 		 * Halt the motor as an emergency.
 		 */
-		void halt();
+		void halt(Status status = HALTED);
 
 		/**
 		 * Finished.

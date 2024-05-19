@@ -33,6 +33,9 @@ void Watcher::run(void* data) {
 			case Motor::PAUSED:
 				info = "paused";
 				break;
+			case Motor::PAUSED_BY_ERROR:
+				info = "paused by error";
+				break;
 			case Motor::RUNNING:
 				info = "running. Velocity " + String(motor->getAngularVelocity());
 				break;
@@ -78,7 +81,7 @@ void Watcher::run(void* data) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":0}>ET"));
 		}
 
-		if(motor->getStatus() == Motor::PAUSED) {
+		if(motor->getStatus() == Motor::PAUSED || motor->getStatus() == Motor::PAUSED_BY_ERROR) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Seguir\"}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(motor->getCurrentSpinsQuantity()) + String("\"}>ET")));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * motor->getCurrentSpinsQuantity()) / motor->getMaxSpinsQuantity() * 100) ) + "}>ET"));
