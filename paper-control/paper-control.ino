@@ -3,6 +3,7 @@
 #include "Motor.hpp"
 #include "Watcher.hpp"
 #include "Status.hpp"
+#include "Glooger.hpp"
 
 Motor * motor;
 
@@ -31,6 +32,9 @@ void setup() {
 
 	Watcher * watcher = new Watcher("wtc");
 	watcher->start();
+
+	Glooger * glooger = new Glooger("ggl");
+	glooger->start();
 }
 
 TickType_t xDelay = 1 / portTICK_PERIOD_MS;

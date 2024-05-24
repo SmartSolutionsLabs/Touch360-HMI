@@ -1,9 +1,17 @@
 #ifndef CONTROL_INC
 #define CONTROL_INC
 
+#include "Status.hpp"
 #include "Queue.h"
 
 #include <Preferences.h>
+
+struct Gloog {
+	unsigned int type;
+	time_t unixtime;
+	unsigned int status;
+	unsigned int data; // optional. Generally spins quantity
+};
 
 struct Roll {
 	unsigned int maxSpinsQuantity;
@@ -27,6 +35,11 @@ class Control {
 			RECEIVING
 		};
 
+		enum GloogerEvent {
+			LOG,
+			STOCK
+		};
+
 		enum View {
 			HOME,
 			CONFIGURATION,
@@ -43,6 +56,11 @@ class Control {
 		 * Queue as display instructions buffer.
 		 */
 		Queue<String> messagesQueue;
+
+		/**
+		 * Queue to Glooger.
+		 */
+		Queue<Gloog> gloogerQueue;
 
 		/**
 		 * Set instruction type for sending in display.
@@ -71,6 +89,8 @@ class Control {
 		// Set and save credentials of network
 		void setNetworkPassword(String networkPassword);
 		void setNetworkSsid(String networkSsid);
+
+		void addGloog(unsigned int type, GloogerEvent event, Status status, unsigned int data);
 
 	private:
 		DisplayStatus displayStatus;

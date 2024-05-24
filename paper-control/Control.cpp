@@ -13,7 +13,7 @@ Control * Control::getInstance() {
 	return control;
 }
 
-Control::Control() : displayStatus(RECEIVING), messagesQueue(25), view(HOME) {
+Control::Control() : displayStatus(RECEIVING), messagesQueue(25), gloogerQueue(200), view(HOME) {
 	unsigned int rollIndex = (sizeof(this->rolls) / sizeof(*this->rolls));
 	char strRoll[5];
 	while(rollIndex--) {
@@ -108,4 +108,23 @@ void Control::setNetworkSsid(String networkSsid) {
 	Network::SSID = networkSsid;
 
 	this->preferences.putString("netSsid", networkSsid);
+}
+
+void Control::addGloog(unsigned int type, GloogerEvent event, Status status, unsigned int data) {
+	Gloog log;
+	log.type = event;
+	log.status = static_cast<unsigned int>(status);
+	log.data = 1900;
+
+	time_t now;
+	struct tm timeinfo;
+	if(!getLocalTime(&timeinfo)) {
+		Serial.println("Failed to obtain time");
+		log.unixtime = 0;
+	}
+	else {
+		time(&log.unixtime);
+	}
+
+	this->gloogerQueue.push(log);
 }
