@@ -2,15 +2,16 @@
 #include "Control.hpp"
 #include "Motor.hpp"
 #include "Watcher.hpp"
+#include "Status.hpp"
 
 Motor * motor;
 
 // Controlling motor acceleration
 void IRAM_ATTR interruptMotorSecondHand(void* arg) {
-	if(motor->getStatus() == Motor::RUNNING) {
+	if(motor->getStatus() == Status::RUNNING) {
 		motor->incrementAngularVelocity();
 	}
-	if(motor->getStatus() == Motor::RUNNING_WITH_BREAK && motor->decrementAngularVelocity() == 0) {
+	if(motor->getStatus() == Status::RUNNING_WITH_BREAK && motor->decrementAngularVelocity() == 0) {
 		esp_timer_stop(motor->secondHandTimer);
 		motor->secondHandTimer = nullptr;
 	}

@@ -16,7 +16,7 @@ Motor * Motor::getInstance() {
 Motor::Motor() : Thread("mtr", 1) {
 }
 
-Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING), status(Motor::OFF) {
+Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING), status(Status::OFF) {
 	this->maxAngularVelocity = this->control->getMaxVelocity();
 
 	// This motor will run forever
@@ -80,7 +80,7 @@ int Motor::getMaxAngularVelocity() const {
 }
 
 void Motor::stop() {
-	this->status = Motor::FINISHED;
+	this->status = Status::FINISHED;
 	this->angularVelocity = 0;
 
 	if(this->secondHandTimer != nullptr) {
@@ -94,7 +94,7 @@ void Motor::halt(Status status) {
 
 	this->angularVelocity = 0;
 
-	if(this->status == Motor::HALTED) {
+	if(this->status == Status::HALTED) {
 		this->currentSpinsQuantity = 0;
 
 		if(this->secondHandTimer != nullptr) {
@@ -105,12 +105,12 @@ void Motor::halt(Status status) {
 }
 
 void Motor::toggleStatus() {
-	if(this->status == Motor::HALTED) {
+	if(this->status == Status::HALTED) {
 		this->currentSpinsQuantity = 0; // Always resseting when was emergency stop
 	}
 
-	if(this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK) {
-		this->status = Motor::PAUSED;
+	if(this->status == Status::RUNNING || this->status == Status::RUNNING_WITH_BREAK) {
+		this->status = Status::PAUSED;
 		this->angularVelocity = 0; // by the way
 		return;
 	}
@@ -121,7 +121,7 @@ void Motor::toggleStatus() {
 		return; // Do nothing
 	}
 
-	this->status = Motor::RUNNING;
+	this->status = Status::RUNNING;
 
 	this->angularVelocity = 0;
 
@@ -137,7 +137,7 @@ void Motor::toggleStatus() {
 	}
 }
 
-Motor::Status Motor::getStatus() const {
+Status Motor::getStatus() const {
 	return this->status;
 }
 
@@ -196,7 +196,7 @@ void Motor::run(void* data) {
 	bool previousMotorSpinRead = 0; //remoteControl.digitalRead(PIN_SPIN);
 	bool currentMotorSpinRead = previousMotorSpinRead;
 
-	Status previousMotorStatus = Motor::OFF;
+	Status previousMotorStatus = Status::OFF;
 
 	while(1) {
 		vTaskDelay(xDelay);
@@ -207,28 +207,28 @@ void Motor::run(void* data) {
 			angularVelocity = MAX_MOTOR_VELOCITY;
 		}
 
-		if(!remoteControl.digitalRead(PIN_TEST) && this->status != Motor::TEST){
-			this->status = Motor::TEST;
+		if(!remoteControl.digitalRead(PIN_TEST) && this->status != Status::TEST){
+			this->status = Status::TEST;
 			this->angularVelocity = 100;
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			motorControl.setPin(7, angularVelocity);
 		}
 
-		if(remoteControl.digitalRead(PIN_TEST) && this->status == Motor::TEST){
-			this->status = Motor::OFF;
+		if(remoteControl.digitalRead(PIN_TEST) && this->status == Status::TEST){
+			this->status = Status::OFF;
 			this->angularVelocity = 0;
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			motorControl.setPin(7, angularVelocity);
 		}
 
 		// Starting motor when was in another status
-		if(previousMotorStatus != Motor::RUNNING && this->status == Motor::RUNNING) {
+		if(previousMotorStatus != Status::RUNNING && this->status == Status::RUNNING) {
 			previousMotorStatus == this->status;
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			remoteControl.digitalWrite(PIN_ELECTROVALVE, LOW);
 		}
 
-		if((this->status == Motor::PAUSED || this->status == Motor::HALTED) && (previousMotorStatus != Motor::PAUSED || previousMotorStatus != Motor::HALTED)) {
+		if((this->status == Status::PAUSED || this->status == Status::HALTED) && (previousMotorStatus != Status::PAUSED || previousMotorStatus != Status::HALTED)) {
 			previousMotorStatus == this->status;
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			remoteControl.digitalWrite(PIN_ELECTROVALVE, HIGH);
@@ -246,7 +246,7 @@ void Motor::run(void* data) {
 			}
 		}
 
-		if(angularVelocity != 0 && this->status == Motor::HALTED) {
+		if(angularVelocity != 0 && this->status == Status::HALTED) {
 			angularVelocity = 0;
 
 			motorControl.setPin(7, 0);
@@ -289,21 +289,21 @@ void Motor::run(void* data) {
 			}
 		}
 
-		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Motor::RUNNING || this->status == Motor::RUNNING_WITH_BREAK)) {
+		if((this->paperDownStatus == Commodity::CUT || this->paperUpStatus == Commodity::CUT) && (this->status == Status::RUNNING || this->status == Status::RUNNING_WITH_BREAK)) {
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
-			this->halt(Motor::PAUSED_BY_ERROR);
+			this->halt(Status::PAUSED_BY_ERROR);
 			this->currentSpinsQuantity = 0; // Resetting because error
 		}
 
 		// Only repaint when motor is working
-		if(this->status != Motor::RUNNING && this->status != Motor::RUNNING_WITH_BREAK) {
+		if(this->status != Status::RUNNING && this->status != Status::RUNNING_WITH_BREAK) {
 			continue;
 		}
 
 		int delta = this->maxSpinsQuantity * (this->maxAngularVelocity/55) / 100;
 		if(delta > (this->maxAngularVelocity/55)) delta = (this->maxAngularVelocity/55);
-		if((this->currentSpinsQuantity > (this->maxSpinsQuantity - delta )) && this->status == Motor::RUNNING) {
-			this->status = Motor::RUNNING_WITH_BREAK;
+		if((this->currentSpinsQuantity > (this->maxSpinsQuantity - delta )) && this->status == Status::RUNNING) {
+			this->status = Status::RUNNING_WITH_BREAK;
 		}
 
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {

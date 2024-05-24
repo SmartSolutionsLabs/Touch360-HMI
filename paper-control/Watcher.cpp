@@ -1,5 +1,6 @@
 #include "Watcher.hpp"
 #include "Motor.hpp"
+#include "Status.hpp"
 
 #include "stone.h"
 
@@ -24,28 +25,28 @@ void Watcher::run(void* data) {
 		// Debugger on display
 		String info;
 		switch(motor->getStatus()) {
-			case Motor::OFF:
+			case Status::OFF:
 				info = "off";
 				break;
-			case Motor::TEST:
+			case Status::TEST:
 				info = "testing. Velocity " + String(motor->getAngularVelocity());
 				break;
-			case Motor::PAUSED:
+			case Status::PAUSED:
 				info = "paused";
 				break;
-			case Motor::PAUSED_BY_ERROR:
+			case Status::PAUSED_BY_ERROR:
 				info = "paused by error";
 				break;
-			case Motor::RUNNING:
+			case Status::RUNNING:
 				info = "running. Velocity " + String(motor->getAngularVelocity());
 				break;
-			case Motor::RUNNING_WITH_BREAK:
+			case Status::RUNNING_WITH_BREAK:
 				info = "runnning with break. Velocity " + String(motor->getAngularVelocity());
 				break;
-			case Motor::HALTED:
+			case Status::HALTED:
 				info = "halted";
 				break;
-			case Motor::FINISHED:
+			case Status::FINISHED:
 				info = "finished";
 				break;
 		}
@@ -70,24 +71,28 @@ void Watcher::run(void* data) {
 			this->control->setDisplaySending();
 		}
 
-		if(motor->getStatus() == Motor::FINISHED) {
+		if(motor->getStatus() == Status::FINISHED) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStop\",\"text\":\"Nuevo\"}>ET"));
 		}
 		else {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStop\",\"text\":\"Parar\"}>ET"));
 		}
 
-		if(motor->getStatus() == Motor::HALTED) {
+		if(motor->getStatus() == Status::HALTED) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":0}>ET"));
 		}
 
-		if(motor->getStatus() == Motor::PAUSED || motor->getStatus() == Motor::PAUSED_BY_ERROR) {
+		if(Motor::getInstance()->getStatus() == Status::HALTED || Motor::getInstance()->getStatus() == Status::FINISHED) {
+			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_color\",\"type\":\"widget\",\"widget\":\"barProgress\",\"color_object\":\"fg_color\",\"color\":4278190334}>ET"));
+		}
+
+		if(motor->getStatus() == Status::PAUSED || motor->getStatus() == Status::PAUSED_BY_ERROR) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Seguir\"}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(motor->getCurrentSpinsQuantity()) + String("\"}>ET")));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":" + String( ceil((1.0f * motor->getCurrentSpinsQuantity()) / motor->getMaxSpinsQuantity() * 100) ) + "}>ET"));
 		}
 
-		if(motor->getStatus() != Motor::RUNNING && motor->getStatus() != Motor::RUNNING_WITH_BREAK) {
+		if(motor->getStatus() != Status::RUNNING && motor->getStatus() != Status::RUNNING_WITH_BREAK) {
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 			this->control->setDisplaySending();
 			continue;

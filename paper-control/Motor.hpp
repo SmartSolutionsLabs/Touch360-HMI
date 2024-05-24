@@ -14,24 +14,14 @@
 
 #define MAX_MOTOR_VELOCITY 1200
 
+#include "Status.hpp"
+
 void IRAM_ATTR interruptMotorSecondHand(void* arg);
 
 /**
  * The single motor for controlling it.
  */
 class Motor : public Thread {
-	public:
-		enum Status {
-			OFF,
-			TEST,
-			RUNNING,
-			RUNNING_WITH_BREAK,
-			PAUSED,
-			PAUSED_BY_ERROR,
-			HALTED,
-			FINISHED
-		};
-
 	protected:
 		static Motor * motor;
 		Motor();

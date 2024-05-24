@@ -1,5 +1,6 @@
 #include "Display.hpp"
 #include "Motor.hpp"
+#include "Status.hpp"
 
 #include "stone.h"
 
@@ -76,10 +77,6 @@ void Display::parseIncome(void * data) {
 		case 4098: // Buttons
 			if(widgetName.startsWith("btnStart")) {
 				Motor::getInstance()->toggleStatus();
-
-				if(Motor::getInstance()->getStatus() == Motor::HALTED || Motor::getInstance()->getStatus() == Motor::FINISHED) {
-					this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_color\",\"type\":\"widget\",\"widget\":\"barProgress\",\"color_object\":\"fg_color\",\"color\":4278190334}>ET"));
-				}
 
 				this->control->setDisplaySending();
 
