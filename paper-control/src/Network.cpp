@@ -3,6 +3,8 @@
 String Network::SSID;
 String Network::PASSWORD;
 
+uint32_t Network::remainingAttempts;
+
 Network * Network::network = nullptr;
 
 Network * Network::getInstance() {
@@ -55,8 +57,7 @@ void Network::onConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 
 void Network::onAddressed(WiFiEvent_t event, WiFiEventInfo_t info) {
 	Serial.print("WiFi.addressed: ");
-	Serial.print(WiFi.localIP());
-	Serial.print("\n");
+	Serial.println(WiFi.localIP());
 }
 
 void Network::onDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -67,8 +68,11 @@ void Network::onDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 		return;
 	}
 
-	// Reattempt the connection
-	WiFi.begin(Network::SSID, Network::PASSWORD);
+	if(--Network::remainingAttempts > 0) {
+		// Reattempt the connection
+		WiFi.begin(Network::SSID, Network::PASSWORD);
+	}
+
 }
 
 void Network::connect() {
@@ -76,6 +80,9 @@ void Network::connect() {
 		Serial.print("No net credentials.");
 		return;
 	}
+
+	// Reset the counter
+	Network::remainingAttempts = MAX_ATTEMPTS_QUANTITY;
 
 	// Attempt the connection
 	WiFi.begin(Network::SSID, Network::PASSWORD);

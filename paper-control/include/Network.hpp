@@ -6,11 +6,15 @@
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
 
+#define MAX_ATTEMPTS_QUANTITY 4
+
 class Network {
 	private:
 	protected:
 		static Network * network;
 		Network();
+
+		static uint32_t remainingAttempts;
 
 	public:
 		void operator=(const Network &) = delete;
