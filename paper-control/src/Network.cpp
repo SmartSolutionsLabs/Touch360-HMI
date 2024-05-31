@@ -1,4 +1,6 @@
 #include "Network.hpp"
+#include "Control.hpp"
+#include "Status.hpp"
 
 String Network::SSID;
 String Network::PASSWORD;
@@ -58,6 +60,8 @@ void Network::onConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 void Network::onAddressed(WiFiEvent_t event, WiFiEventInfo_t info) {
 	Serial.print("WiFi.addressed: ");
 	Serial.println(WiFi.localIP());
+
+	Control::getInstance()->addGloog(GloogerEvent::LOG, Status::ON);
 }
 
 void Network::onDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {

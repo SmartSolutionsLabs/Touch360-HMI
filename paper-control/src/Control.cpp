@@ -110,11 +110,16 @@ void Control::setNetworkSsid(String networkSsid) {
 	this->preferences.putString("netSsid", networkSsid);
 }
 
-void Control::addGloog(unsigned int type, GloogerEvent event, Status status, unsigned int data) {
+void Control::addGloog(GloogerEvent event, Status status, unsigned int data) {
+	if(WiFi.status() != WL_CONNECTED) {
+		// We lose this log
+		return;
+	}
+
 	Gloog log;
 	log.type = event;
-	log.status = static_cast<unsigned int>(status);
-	log.data = 1900;
+	log.status = status;
+	log.data = data;
 
 	time_t now;
 	struct tm timeinfo;

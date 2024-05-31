@@ -22,7 +22,8 @@ void Glooger::run(void* data) {
 	// Begin the access token generation for Google API authentication
 	GSheet.begin(PRIVATE_GOOGLE_CLIENT_EMAIL, PRIVATE_GOOGLE_PROJECT_ID, privateKey);
 
-	TickType_t xDelay = 60 * 1000 / portTICK_PERIOD_MS;
+	TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
+	//~ TickType_t xDelay = 60 * 1000 / portTICK_PERIOD_MS;
 
 	while(true) {
 		vTaskDelay(xDelay);
@@ -31,9 +32,6 @@ void Glooger::run(void* data) {
 		if(!GSheet.ready()) {
 			continue;
 		}
-
-		// Only for testing
-		this->control->addGloog(0, Control::LOG, Status::OFF, 41233);
 
 		if(this->control->gloogerQueue.count() == 0) {
 			continue;
@@ -53,16 +51,42 @@ void Glooger::run(void* data) {
 			Gloog gloog = this->control->gloogerQueue.pop();
 
 			switch(gloog.type) {
-				case Control::LOG:
+				case GloogerEvent::LOG:
 					++logIndex;
 					valueRangeLog.set("values/[0]/[0]", gloog.unixtime);
-					valueRangeLog.set("values/[0]/[1]", 1);
+					valueRangeLog.set("values/[1]/[0]", gloog.unixtime);
+					valueRangeLog.set("values/[2]/[0]",
+						gloog.status == Status::OFF ? TEXT_STATUS_OFF :
+						gloog.status == Status::TEST ? TEXT_STATUS_TEST :
+						gloog.status == Status::RUNNING ? TEXT_STATUS_RUNNING :
+						gloog.status == Status::RUNNING_WITH_BREAK ? TEXT_STATUS_RUNNING_WITH_BREAK :
+						gloog.status == Status::PAUSED ? TEXT_STATUS_PAUSED :
+						gloog.status == Status::PAUSED_BY_ERROR ? TEXT_STATUS_PAUSED_BY_ERROR :
+						gloog.status == Status::HALTED ? TEXT_STATUS_HALTED :
+						gloog.status == Status::FINISHED ? TEXT_STATUS_FINISHED :
+						gloog.status == Status::ON ? TEXT_STATUS_ON :
+						gloog.status == Status::RUNNING_AFTER_PAUSED ? TEXT_STATUS_RUNNING_AFTER_PAUSED :
+						"-"
+					);
 					break;
-				case Control::STOCK:
+				case GloogerEvent::STOCK:
 					++stockIndex;
 					valueRangeStock.set("values/[0]/[0]", gloog.unixtime);
-					valueRangeStock.set("values/[0]/[1]", 2);
-					valueRangeStock.set("values/[0]/[2]", gloog.data);
+					valueRangeStock.set("values/[1]/[0]", gloog.unixtime);
+					valueRangeStock.set("values/[2]/[0]",
+						gloog.status == Status::OFF ? TEXT_STATUS_OFF :
+						gloog.status == Status::TEST ? TEXT_STATUS_TEST :
+						gloog.status == Status::RUNNING ? TEXT_STATUS_RUNNING :
+						gloog.status == Status::RUNNING_WITH_BREAK ? TEXT_STATUS_RUNNING_WITH_BREAK :
+						gloog.status == Status::PAUSED ? TEXT_STATUS_PAUSED :
+						gloog.status == Status::PAUSED_BY_ERROR ? TEXT_STATUS_PAUSED_BY_ERROR :
+						gloog.status == Status::HALTED ? TEXT_STATUS_HALTED :
+						gloog.status == Status::FINISHED ? TEXT_STATUS_FINISHED :
+						gloog.status == Status::ON ? TEXT_STATUS_ON :
+						gloog.status == Status::RUNNING_AFTER_PAUSED ? TEXT_STATUS_RUNNING_AFTER_PAUSED :
+						"-"
+					);
+					valueRangeStock.set("values/[3]/[0]", gloog.data);
 					break;
 			}
 		}

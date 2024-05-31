@@ -87,6 +87,9 @@ void Motor::stop() {
 		esp_timer_stop(this->secondHandTimer);
 		this->secondHandTimer = nullptr;
 	}
+
+	this->control->addGloog(GloogerEvent::LOG, this->status);
+	this->control->addGloog(GloogerEvent::STOCK, this->status, this->currentSpinsQuantity);
 }
 
 void Motor::halt(Status status) {
@@ -102,6 +105,9 @@ void Motor::halt(Status status) {
 			this->secondHandTimer = nullptr;
 		}
 	}
+
+	this->control->addGloog(GloogerEvent::LOG, this->status);
+	this->control->addGloog(GloogerEvent::STOCK, this->status, this->currentSpinsQuantity);
 }
 
 void Motor::toggleStatus() {
@@ -112,6 +118,8 @@ void Motor::toggleStatus() {
 	if(this->status == Status::RUNNING || this->status == Status::RUNNING_WITH_BREAK) {
 		this->status = Status::PAUSED;
 		this->angularVelocity = 0; // by the way
+
+		this->control->addGloog(GloogerEvent::LOG, this->status);
 		return;
 	}
 
@@ -122,6 +130,8 @@ void Motor::toggleStatus() {
 	}
 
 	this->status = Status::RUNNING;
+	this->control->addGloog(GloogerEvent::LOG, Status::RUNNING_AFTER_PAUSED);
+	this->control->addGloog(GloogerEvent::STOCK, Status::RUNNING_AFTER_PAUSED, this->maxSpinsQuantity);
 
 	this->angularVelocity = 0;
 
@@ -212,6 +222,8 @@ void Motor::run(void* data) {
 			this->angularVelocity = 100;
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			motorControl.setPin(7, angularVelocity);
+
+			this->control->addGloog(GloogerEvent::LOG, this->status);
 		}
 
 		if(remoteControl.digitalRead(PIN_TEST) && this->status == Status::TEST){
@@ -219,6 +231,8 @@ void Motor::run(void* data) {
 			this->angularVelocity = 0;
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			motorControl.setPin(7, angularVelocity);
+
+			this->control->addGloog(GloogerEvent::LOG, this->status);
 		}
 
 		// Starting motor when was in another status
@@ -257,8 +271,8 @@ void Motor::run(void* data) {
 		if(this->angularVelocity != angularVelocity) {
 			motorControl.setPin(7, this->angularVelocity);
 			angularVelocity = this->angularVelocity;
-			Serial.print("angVel:");
-			Serial.println(this->angularVelocity);
+			//~ Serial.print("angVel:");
+			//~ Serial.println(this->angularVelocity);
 		}
 
 		// Test up paper and change it

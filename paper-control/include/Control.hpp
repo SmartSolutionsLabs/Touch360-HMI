@@ -6,10 +6,15 @@
 
 #include <Preferences.h>
 
+enum GloogerEvent {
+	LOG,
+	STOCK
+};
+
 struct Gloog {
-	unsigned int type;
+	GloogerEvent type;
 	time_t unixtime;
-	unsigned int status;
+	Status status;
 	unsigned int data; // optional. Generally spins quantity
 };
 
@@ -33,11 +38,6 @@ class Control {
 		enum DisplayStatus {
 			SENDING,
 			RECEIVING
-		};
-
-		enum GloogerEvent {
-			LOG,
-			STOCK
 		};
 
 		enum View {
@@ -90,7 +90,7 @@ class Control {
 		void setNetworkPassword(String networkPassword);
 		void setNetworkSsid(String networkSsid);
 
-		void addGloog(unsigned int type, GloogerEvent event, Status status, unsigned int data);
+		void addGloog(GloogerEvent event, Status status, unsigned int data = 0);
 
 	private:
 		DisplayStatus displayStatus;
