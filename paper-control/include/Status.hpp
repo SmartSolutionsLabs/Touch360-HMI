@@ -21,7 +21,7 @@ enum Status {
 
 #define TEXT_STATUS_OFF "Apagado"
 #define TEXT_STATUS_TEST "Test"
-#define TEXT_STATUS_RUNNING "Corriendo"
+#define TEXT_STATUS_RUNNING "Iniciado"
 #define TEXT_STATUS_RUNNING_WITH_BREAK "Frenando"
 #define TEXT_STATUS_PAUSED "Pausado"
 #define TEXT_STATUS_PAUSED_BY_ERROR "Pausado por error"
