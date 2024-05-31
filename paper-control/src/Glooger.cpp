@@ -50,11 +50,15 @@ void Glooger::run(void* data) {
 		while(this->control->gloogerQueue.count()) {
 			Gloog gloog = this->control->gloogerQueue.pop();
 
+			// Create string of epoch with formula
+			char epochWithFormula[32];
+			sprintf(epochWithFormula, "=EPOCHTODATE(%d)", gloog.unixtime - 5 * 60 * 60);
+
 			switch(gloog.type) {
 				case GloogerEvent::LOG:
 					++logIndex;
-					valueRangeLog.set("values/[0]/[0]", gloog.unixtime);
-					valueRangeLog.set("values/[1]/[0]", gloog.unixtime);
+					valueRangeLog.set("values/[0]/[0]", epochWithFormula);
+					valueRangeLog.set("values/[1]/[0]", epochWithFormula);
 					valueRangeLog.set("values/[2]/[0]",
 						gloog.status == Status::OFF ? TEXT_STATUS_OFF :
 						gloog.status == Status::TEST ? TEXT_STATUS_TEST :
@@ -71,8 +75,8 @@ void Glooger::run(void* data) {
 					break;
 				case GloogerEvent::STOCK:
 					++stockIndex;
-					valueRangeStock.set("values/[0]/[0]", gloog.unixtime);
-					valueRangeStock.set("values/[1]/[0]", gloog.unixtime);
+					valueRangeStock.set("values/[0]/[0]", epochWithFormula);
+					valueRangeStock.set("values/[1]/[0]", epochWithFormula);
 					valueRangeStock.set("values/[2]/[0]",
 						gloog.status == Status::OFF ? TEXT_STATUS_OFF :
 						gloog.status == Status::TEST ? TEXT_STATUS_TEST :
@@ -89,6 +93,9 @@ void Glooger::run(void* data) {
 					valueRangeStock.set("values/[3]/[0]", gloog.data);
 					break;
 			}
+
+			// Cleaning formula
+			memset(epochWithFormula, '\0', sizeof(epochWithFormula));
 		}
 
 		// Append values to the spreadsheet
