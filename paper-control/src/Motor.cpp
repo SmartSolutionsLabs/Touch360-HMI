@@ -93,6 +93,12 @@ void Motor::stop() {
 }
 
 void Motor::halt(Status status) {
+	// Only for log
+	if(this->status != Status::FINISHED) {
+		this->control->addGloog(GloogerEvent::LOG, status);
+		this->control->addGloog(GloogerEvent::STOCK, status, this->currentSpinsQuantity);
+	}
+
 	this->status = status;
 
 	this->angularVelocity = 0;
@@ -106,8 +112,6 @@ void Motor::halt(Status status) {
 		}
 	}
 
-	this->control->addGloog(GloogerEvent::LOG, this->status);
-	this->control->addGloog(GloogerEvent::STOCK, this->status, this->currentSpinsQuantity);
 }
 
 void Motor::toggleStatus() {
@@ -129,9 +133,17 @@ void Motor::toggleStatus() {
 		return; // Do nothing
 	}
 
+	// Only for log
+	if(this->status == Status::PAUSED || this->status == Status::PAUSED_BY_ERROR) {
+		this->control->addGloog(GloogerEvent::LOG, Status::RUNNING_AFTER_PAUSED);
+		this->control->addGloog(GloogerEvent::STOCK, Status::RUNNING_AFTER_PAUSED, this->maxSpinsQuantity);
+	}
+	else {
+		this->control->addGloog(GloogerEvent::LOG, Status::RUNNING);
+		this->control->addGloog(GloogerEvent::STOCK, Status::RUNNING, this->maxSpinsQuantity);
+	}
+
 	this->status = Status::RUNNING;
-	this->control->addGloog(GloogerEvent::LOG, Status::RUNNING_AFTER_PAUSED);
-	this->control->addGloog(GloogerEvent::STOCK, Status::RUNNING_AFTER_PAUSED, this->maxSpinsQuantity);
 
 	this->angularVelocity = 0;
 
