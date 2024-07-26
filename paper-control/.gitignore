@@ -1,9 +1,12 @@
+# All private data. Generally strings.
+include/private.hpp
+
 # Android Queue (https://github.com/sdesalas/Arduino-Queue.h/blob/master/Queue.h)
-Queue.h
+include/Queue.h
 
 # Stone HMI has its own API but we only had modified stone_config.h
 # so we exclude the other API files of Stone HMI.
-stone.h
-stone_receive.cpp
-stone_receive_group.cpp
-stone_transport.cpp
+include/stone.h
+src/stone_receive.cpp
+src/stone_receive_group.cpp
+src/stone_transport.cpp
