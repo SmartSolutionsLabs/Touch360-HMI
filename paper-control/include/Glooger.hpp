@@ -1,20 +1,21 @@
 #ifndef GLOOGER_INC
 #define GLOOGER_INC
 
-#include "Thread.hpp"
+#include <Observer.hpp>
+#include <Thread.hpp>
 
 /**
  * Send data to Google Drive.
  */
-class Glooger : public Thread {
+class Glooger : public Thread, public Observer {
 	private:
 
 	public:
 		Glooger(const char * name);
 
-		void run(void* data);
+		void run(void* data) override;
 
-		void parseIncome(void * data);
+		void update() override;
 };
 
 #endif

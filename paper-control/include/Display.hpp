@@ -1,17 +1,17 @@
 #ifndef DISPLAY_INC
 #define DISPLAY_INC
 
-#include "Thread.hpp"
+#include <Publisher.hpp>
 
-class Display : public Thread {
-	private:
-
+class Display : public Publisher {
 	public:
-		Display(const char * name);
+		Display(const char * name, int taskCore = 1);
 
-		void run(void* data);
+		void connect(void * data) override;
 
-		void parseIncome(void * data);
+		void run(void* data) override;
+
+		void parseIncome(unsigned char * data, size_t length);
 };
 
 #endif

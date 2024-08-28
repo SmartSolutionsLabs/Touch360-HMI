@@ -4,7 +4,7 @@
 
 #include "stone.h"
 
-Display::Display(const char * name) : Thread(name) {
+Display::Display(const char * name, int taskCore) : Publisher(name, taskCore) {
 }
 
 void Display::run(void* data) {
@@ -12,24 +12,12 @@ void Display::run(void* data) {
 
 	TickType_t xDelay = 1 / portTICK_PERIOD_MS;
 	Serial2.flush();
-	Serial.print("Display::run");
 
 	while(true) {
 		vTaskDelay(xDelay);
 
-		if(this->control->getDisplayStatus() == Control::RECEIVING) {
-			serial_receive();
-			if(receive_over_flage == 1) {
-				Serial.println("receive_over_flage : 1");
-				this->parseIncome(nullptr);
-				_stone_recive_free(NULL); //Manual release the allocated space
-				// Resetting
-				receive_over_flage = 0;
-			}
-			continue;
-		}
-
-		if(this->control->getDisplayStatus() == Control::SENDING) {
+/*
+		// Send directly to Tx
 			if(this->control->messagesQueue.count()) {
 				// Flag for doing pauses between sending
 				int pauseFlag = 0;
@@ -43,13 +31,12 @@ void Display::run(void* data) {
 				pauseFlag = 0;
 				Serial2.flush();
 			}
-
-			this->control->setDisplayReceiving();
-		}
+*/
 	}
 }
 
-void Display::parseIncome(void * data) {
+void Display::parseIncome(unsigned char * data, size_t length) {
+/*
 	extern recive_group STONER;
 	extern unsigned char STONE_RX_BUF[RX_LEN];
 
@@ -254,4 +241,5 @@ void Display::parseIncome(void * data) {
 
 			break;
 	}
+*/
 }

@@ -2,7 +2,9 @@
 #define CONTROL_INC
 
 #include "Status.hpp"
-#include "Queue.h"
+
+#include <Queue.h>
+#include <Application.hpp>
 
 #include <Preferences.h>
 
@@ -25,20 +27,14 @@ struct Roll {
 	Preferences preferences;
 };
 
-class Control {
+class Control : public Application {
 	protected:
-		static Control * control;
-		Control();
-
 		Roll rolls[3];
 
 		Preferences preferences;
 
 	public:
-		enum DisplayStatus {
-			SENDING,
-			RECEIVING
-		};
+		Control();
 
 		enum View {
 			HOME,
@@ -46,11 +42,6 @@ class Control {
 			HISTORY,
 			CREDITS
 		} view;
-
-		// For singleton
-		static Control * getInstance();
-		Control(Control &other) = delete;
-		void operator=(const Control &) = delete;
 
 		/**
 		 * Queue as display instructions buffer.
@@ -61,18 +52,6 @@ class Control {
 		 * Queue to Glooger.
 		 */
 		Queue<Gloog> gloogerQueue;
-
-		/**
-		 * Set instruction type for sending in display.
-		 */
-		void setDisplaySending();
-
-		/**
-		 * Set instruction type for receiving in display.
-		 */
-		void setDisplayReceiving();
-
-		DisplayStatus getDisplayStatus() const;
 
 		void setRollQuantity(unsigned int typeIndex, unsigned int position, unsigned int value);
 
@@ -92,8 +71,9 @@ class Control {
 
 		void addGloog(GloogerEvent event, Status status, unsigned int data = 0);
 
-	private:
-		DisplayStatus displayStatus;
+		void processMessage(unsigned char * message, size_t length, bool printable) override;
+
+		void initializeModulesPointerArray() override;
 };
 
 #endif

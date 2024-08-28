@@ -1,11 +1,11 @@
 #include "Display.hpp"
 #include "Control.hpp"
 #include "Motor.hpp"
-#include "Watcher.hpp"
 #include "Status.hpp"
 #include "Glooger.hpp"
 
 Motor * motor;
+Application * control;
 
 // Controlling motor acceleration
 void IRAM_ATTR interruptMotorSecondHand(void* arg) {
@@ -19,19 +19,11 @@ void IRAM_ATTR interruptMotorSecondHand(void* arg) {
 }
 
 void setup() {
-	Serial2.begin(115200, SERIAL_8N1, 5, 14);
-	pinMode(25, OUTPUT);
-	pinMode(26, OUTPUT);
-	pinMode(27, OUTPUT);
 	Serial.begin(115200);
 
-	motor = Motor::getInstance();
-
-	Display * display = new Display("hmi");
-	display->start();
-
-	Watcher * watcher = new Watcher("wtc");
-	watcher->start();
+	control = new Control;
+	control->initializeModulesPointerArray();
+	control->beginSerialPort(Serial2, SERIAL_8N1, 5, 14);
 
 	Glooger * glooger = new Glooger("ggl");
 	glooger->start();

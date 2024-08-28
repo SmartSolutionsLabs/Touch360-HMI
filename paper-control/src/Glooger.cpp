@@ -28,6 +28,7 @@ void Glooger::run(void* data) {
 	while(true) {
 		vTaskDelay(xDelay);
 
+/*
 		// Repeatedly for authentication checking and processing
 		if(!GSheet.ready()) {
 			continue;
@@ -120,8 +121,9 @@ void Glooger::run(void* data) {
 				Serial.println(GSheet.errorReason());
 			}
 		}
+*/
 	}
 }
 
-void Glooger::parseIncome(void * data) {
+void Glooger::update() {
 }

@@ -3,24 +3,10 @@
 #include <Adafruit_PCF8574.h>
 #include <Adafruit_PWMServoDriver.h>
 
-Motor * Motor::motor = nullptr;
-
-Motor * Motor::getInstance() {
-	if(motor == nullptr) {
-		motor = new Motor("motor");
-	}
-
-	return motor;
-}
-
-Motor::Motor() : Thread("mtr", 1) {
-}
-
-Motor::Motor(const char * name) : Thread(name), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING), status(Status::OFF) {
+Motor::Motor(const char * name, int taskCore) : Publisher(name, taskCore), maxSpinsQuantity(0), currentSpinsQuantity(0), angularVelocity(0), paperDownStatus(Commodity::MISSING), paperUpStatus(Commodity::MISSING), status(Status::OFF) {
+/*
 	this->maxAngularVelocity = this->control->getMaxVelocity();
-
-	// This motor will run forever
-	this->start();
+*/
 }
 
 void Motor::setMaxSpinsQuantity(unsigned int maxSpinsQuantity) {
@@ -88,15 +74,19 @@ void Motor::stop() {
 		this->secondHandTimer = nullptr;
 	}
 
+/*
 	this->control->addGloog(GloogerEvent::LOG, this->status);
 	this->control->addGloog(GloogerEvent::STOCK, this->status, this->currentSpinsQuantity);
+*/
 }
 
 void Motor::halt(Status status) {
 	// Only for log
 	if(this->status != Status::FINISHED) {
+/*
 		this->control->addGloog(GloogerEvent::LOG, status);
 		this->control->addGloog(GloogerEvent::STOCK, status, this->currentSpinsQuantity);
+*/
 	}
 
 	this->status = status;
@@ -123,7 +113,9 @@ void Motor::toggleStatus() {
 		this->status = Status::PAUSED;
 		this->angularVelocity = 0; // by the way
 
+/*
 		this->control->addGloog(GloogerEvent::LOG, this->status);
+*/
 		return;
 	}
 
@@ -135,12 +127,16 @@ void Motor::toggleStatus() {
 
 	// Only for log
 	if(this->status == Status::PAUSED || this->status == Status::PAUSED_BY_ERROR) {
+		/*
 		this->control->addGloog(GloogerEvent::LOG, Status::RUNNING_AFTER_PAUSED);
 		this->control->addGloog(GloogerEvent::STOCK, Status::RUNNING_AFTER_PAUSED, this->maxSpinsQuantity);
+		*/
 	}
 	else {
+		/*
 		this->control->addGloog(GloogerEvent::LOG, Status::RUNNING);
 		this->control->addGloog(GloogerEvent::STOCK, Status::RUNNING, this->maxSpinsQuantity);
+		*/
 	}
 
 	this->status = Status::RUNNING;
@@ -235,7 +231,9 @@ void Motor::run(void* data) {
 			remoteControl.digitalWrite(PIN_MOTOR, LOW);
 			motorControl.setPin(7, angularVelocity);
 
+/*
 			this->control->addGloog(GloogerEvent::LOG, this->status);
+*/
 		}
 
 		if(remoteControl.digitalRead(PIN_TEST) && this->status == Status::TEST){
@@ -244,7 +242,9 @@ void Motor::run(void* data) {
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			motorControl.setPin(7, angularVelocity);
 
+			/*
 			this->control->addGloog(GloogerEvent::LOG, this->status);
+			*/
 		}
 
 		// Starting motor when was in another status
@@ -335,6 +335,7 @@ void Motor::run(void* data) {
 		if(this->currentSpinsQuantity >= this->maxSpinsQuantity) {
 			remoteControl.digitalWrite(PIN_MOTOR, HIGH);
 			this->stop(); // Stopped gracefully
+/*
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_color\",\"type\":\"widget\",\"widget\":\"barProgress\",\"color_object\":\"fg_color\",\"color\":4278255104}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"progress_bar\",\"widget\":\"barProgress\",\"value\":100}>ET"));
@@ -342,9 +343,7 @@ void Motor::run(void* data) {
 			//~ this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStop\",\"text\":\"Nuevo\"}>ET"));
 			this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"" + String(this->getCurrentSpinsQuantity()) + String("\"}>ET")));
 			this->control->setDisplaySending();
+*/
 		}
 	}
-}
-
-void Motor::parseIncome(void * data) {
 }

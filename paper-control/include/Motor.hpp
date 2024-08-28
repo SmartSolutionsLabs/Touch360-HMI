@@ -1,7 +1,9 @@
 #ifndef MOTOR_INC
 #define MOTOR_INC
 
-#include "Thread.hpp"
+#include <Publisher.hpp>
+#include <Observer.hpp>
+
 #include "Commodity.hpp"
 
 #define PIN_PAPER_UP 4
@@ -21,12 +23,8 @@ void IRAM_ATTR interruptMotorSecondHand(void* arg);
 /**
  * The single motor for controlling it.
  */
-class Motor : public Thread {
+class Motor : public Publisher, public Observer {
 	protected:
-		static Motor * motor;
-		Motor();
-		Motor(const char * name);
-
 		Commodity paperUpStatus;
 		Commodity paperDownStatus;
 
@@ -37,16 +35,15 @@ class Motor : public Thread {
 		volatile Status status;
 
 	public:
+		Motor(const char * name, int taskCore = 1);
+
 		esp_timer_handle_t secondHandTimer = nullptr;
 
-		// For singleton
-		static Motor * getInstance();
-		Motor(Motor &other) = delete;
-		void operator=(const Motor &) = delete;
+		void connect(void * data) override;
 
-		void run(void* data);
+		void run(void* data) override;
 
-		void parseIncome(void * data);
+		void update() override;
 
 		/**
 		 * Only can change it when motor is not running.

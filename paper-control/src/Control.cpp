@@ -3,17 +3,10 @@
 
 #include "private.hpp"
 
-Control * Control::control = nullptr;
+#include "Display.hpp"
+#include "Motor.hpp"
 
-Control * Control::getInstance() {
-	if(control == nullptr) {
-		control = new Control();
-	}
-
-	return control;
-}
-
-Control::Control() : displayStatus(RECEIVING), messagesQueue(25), gloogerQueue(200), view(HOME) {
+Control::Control() : messagesQueue(25), gloogerQueue(200), view(HOME) {
 	unsigned int rollIndex = (sizeof(this->rolls) / sizeof(*this->rolls));
 	char strRoll[5];
 	while(rollIndex--) {
@@ -29,28 +22,6 @@ Control::Control() : displayStatus(RECEIVING), messagesQueue(25), gloogerQueue(2
 	Network::PASSWORD = this->preferences.getString("netPassword", PRIVATE_NETWORK_PASSWORD);
 
 	Network::getInstance()->connect();
-}
-
-void Control::setDisplaySending() {
-	this->displayStatus = Control::SENDING;
-
-	// For receiving always pins are high
-	digitalWrite(25, HIGH);
-	digitalWrite(26, HIGH);
-	digitalWrite(27, HIGH);
-}
-
-void Control::setDisplayReceiving() {
-	this->displayStatus = Control::RECEIVING;
-
-	// For receiving always pins are low
-	digitalWrite(25, LOW);
-	digitalWrite(26, LOW);
-	digitalWrite(27, LOW);
-}
-
-Control::DisplayStatus Control::getDisplayStatus() const {
-	return this->displayStatus;
 }
 
 void Control::setRollQuantity(unsigned int typeIndex, unsigned int position, unsigned int newValue) {
@@ -132,4 +103,36 @@ void Control::addGloog(GloogerEvent event, Status status, unsigned int data) {
 	}
 
 	this->gloogerQueue.push(log);
+}
+
+void Control::initializeModulesPointerArray() {
+	if (this->modulesPointer != nullptr) {
+		while (this->modulesPointerQuantity) {
+			delete this->modulesPointer[--this->modulesPointerQuantity];
+		}
+		delete[] this->modulesPointer;
+	}
+
+	this->modulesPointerQuantity = 2;
+
+	this->modulesPointer = new Module*[2];
+
+	this->modulesPointer[0] = new Display("hmi");
+	this->modulesPointer[0]->start();
+
+	this->modulesPointer[1] = new Motor("mtr");
+	this->modulesPointer[1]->start();
+}
+
+void Control::processMessage(unsigned char * message, size_t length, bool printable) {
+	if (printable) {
+		for (int i = 0; i < length; ++i) {
+			Serial.print((char) message[i]);
+		}
+	}
+
+	// cast because complains, but we know that this Module is a Display
+	static_cast<Display*>(this->modulesPointer[0])->parseIncome(message, length);
+
+	delete[] message;
 }
