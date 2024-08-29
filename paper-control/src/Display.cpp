@@ -65,8 +65,6 @@ void Display::parseIncome(unsigned char * data, size_t length) {
 			if(widgetName.startsWith("btnStart")) {
 				Motor::getInstance()->toggleStatus();
 
-				this->control->setDisplaySending();
-
 				return;
 			}
 
@@ -75,32 +73,27 @@ void Display::parseIncome(unsigned char * data, size_t length) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsCurrent\",\"text\":\"0\"}>ET"));
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"button\",\"widget\":\"btnStart\",\"text\":\"Iniciar\"}>ET"));
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_visible\",\"type\":\"widget\",\"widget\":\"imgStop\",\"visible\":true}>ET"));
-				this->control->setDisplaySending();
 				Motor::getInstance()->resetCurrentSpinsQuantity();
 				return;
 			}
 
 			if(widgetName.startsWith("btnHome")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"home_page\"}>ET"));
-				this->control->setDisplaySending();
 				return;
 			}
 
 			if(widgetName.startsWith("btnConfig")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"configPage\"}>ET"));
-				this->control->setDisplaySending();
 				return;
 			}
 
 			if(widgetName.startsWith("btnHistory")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"historyPage\"}>ET"));
-				this->control->setDisplaySending();
 				return;
 			}
 
 			if(widgetName.startsWith("btnLogo")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"open_win\",\"type\":\"window\",\"widget\":\"sslPage\"}>ET"));
-				this->control->setDisplaySending();
 				return;
 			}
 
@@ -109,19 +102,16 @@ void Display::parseIncome(unsigned char * data, size_t length) {
 		case 4144: {
 			if(widgetName.startsWith("typeSelected1")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(0)) + String("\"}>ET")));
-				this->control->setDisplaySending();
 				Motor::getInstance()->setMaxSpinsQuantity(this->control->getRollQuantity(0));
 				return;
 			}
 			if(widgetName.startsWith("typeSelected2")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(1)) + String("\"}>ET")));
-				this->control->setDisplaySending();
 				Motor::getInstance()->setMaxSpinsQuantity(this->control->getRollQuantity(1));
 				return;
 			}
 			if(widgetName.startsWith("typeSelected3")) {
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSpinsTotal\",\"text\":\"" + String(this->control->getRollQuantity(2)) + String("\"}>ET")));
-				this->control->setDisplaySending();
 				Motor::getInstance()->setMaxSpinsQuantity(this->control->getRollQuantity(2));
 				return;
 			}
@@ -208,7 +198,6 @@ void Display::parseIncome(unsigned char * data, size_t length) {
 				this->control->view = Control::HOME;
 
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_text\",\"type\":\"label\",\"widget\":\"lblSelected1_3\",\"text\":[\"" + this->control->getRollName(0) + "\",\"" + this->control->getRollName(1) + "\",\"" + this->control->getRollName(2) + "\"]}>ET"));
-				this->control->setDisplaySending();
 				return;
 			}
 
@@ -227,7 +216,6 @@ void Display::parseIncome(unsigned char * data, size_t length) {
 				spinsQuantity = this->control->getRollQuantity(2);
 				this->control->messagesQueue.push(String("ST<{\"cmd_code\":\"set_value\",\"type\":\"text_selector\",\"widget\":\"spinner31_34\",\"value\":[" + String(spinsQuantity % 10) + String(",") + ((spinsQuantity / 10) % 10) + String(",") + ((spinsQuantity / 100) % 10) + String(",") + ((spinsQuantity / 1000) % 10) + String("]}>ET")));
 
-				this->control->setDisplaySending();
 				return;
 			}
 
