@@ -8,30 +8,20 @@ Display::Display(const char * name, int taskCore) : Publisher(name, taskCore) {
 }
 
 void Display::run(void* data) {
-	extern unsigned char receive_over_flage;
-
-	TickType_t xDelay = 1 / portTICK_PERIOD_MS;
-	Serial2.flush();
+	this->iterationDelay = 1 / portTICK_PERIOD_MS;
 
 	while(true) {
-		vTaskDelay(xDelay);
+		vTaskDelay(this->iterationDelay);
 
-/*
 		// Send directly to Tx
-			if(this->control->messagesQueue.count()) {
-				// Flag for doing pauses between sending
-				int pauseFlag = 0;
-				Serial2.flush();
-				while(this->control->messagesQueue.count()) {
-					if(++pauseFlag & 1) { // Each two times
-						vTaskDelay(15 / portTICK_PERIOD_MS); // Lightweight pause
-					}
-					Serial2.print(this->control->messagesQueue.pop());
-				}
-				pauseFlag = 0;
-				Serial2.flush();
+		if(this->control->messagesQueue.count()) {
+			while(this->control->messagesQueue.count()) {
+				Serial2.print(this->control->messagesQueue.pop());
 			}
-*/
+		}
+
+		// Pause this task because there is nothing in queue to process
+		this->suspend();
 	}
 }
 
